@@ -4,10 +4,12 @@ import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import share.sh4re.config.JwtConfig;
 import share.sh4re.domain.User;
 import share.sh4re.dto.SignInReq;
 import share.sh4re.dto.SignUpReq;
 import share.sh4re.dto.TokenResponse;
+import share.sh4re.exception.UserErrorCode;
 import share.sh4re.repository.UserRepository;
 
 @Service
@@ -15,6 +17,7 @@ import share.sh4re.repository.UserRepository;
 @AllArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
+  private final JwtConfig jwtConfig;
 
   public User signUp(SignUpReq signUpReq){
     validateUserInput(
@@ -23,7 +26,7 @@ public class UserService {
         signUpReq.getClassNumber(),
         signUpReq.getStudentNumber()
     );
-    if (userRepository.findByName(signUpReq.getName()).isPresent()) throw new IllegalStateException("해당 이름의 유저가 이미 존재합니다.");
+    if (userRepository.findByName(signUpReq.getName()).isPresent()) throw UserErrorCode.USERNAME_ALREADY_EXISTS.defaultException();
     User user = new User();
     user.savePassword(signUpReq.getPassword());
     user.update(signUpReq.getName(), signUpReq.getClassNumber(), signUpReq.getStudentNumber());
@@ -35,8 +38,23 @@ public class UserService {
     if(res.isEmpty()) throw new IllegalStateException("해당 이름의 유저가 존재하지 않습니다.");
     User user = res.get();
     if(user.checkPassword(signInReq.getPassword())) {
-      // jwt 토큰 생성 및 TokenResponse 규격에 맞춰 반환
+      String token = jwtConfig.generateToken(user);
+      String refreshToken = jwtConfig.generateRefreshToken(user);
+      return new TokenResponse(token, refreshToken);
     } else throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
+  }
+
+  public TokenResponse refreshToken(String refreshToken) {
+    if (refreshToken == null || refreshToken.isEmpty()) {
+      throw new IllegalArgumentException("Refresh token is required");
+    }
+
+    if (!jwtConfig.validateRefreshToken(refreshToken)) {
+      throw new IllegalArgumentException("Invalid or expired refresh token");
+    }
+
+    String newAccessToken = jwtConfig.generateTokenFromRefreshToken(refreshToken);
+    return new TokenResponse(newAccessToken, refreshToken);
   }
 
   public User findById(Long id){

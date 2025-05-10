@@ -18,9 +18,11 @@ repositories {
 }
 
 dependencies {
-	implementation "io.jsonwebtoken:jjwt:0.9.1"
+	implementation "io.jsonwebtoken:jjwt:0.12.6"
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.security:spring-security-crypto'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation('org.projectlombok:lombok')
