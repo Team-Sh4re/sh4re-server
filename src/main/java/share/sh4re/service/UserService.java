@@ -9,7 +9,7 @@ import share.sh4re.domain.User;
 import share.sh4re.dto.SignInReq;
 import share.sh4re.dto.SignUpReq;
 import share.sh4re.dto.TokenResponse;
-import share.sh4re.exception.UserErrorCode;
+import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.UserRepository;
 
 @Service

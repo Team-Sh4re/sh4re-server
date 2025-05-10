@@ -1,10 +1,12 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.time.Instant;
 import java.util.List;
 import lombok.Builder;
+import share.sh4re.exceptions.errorcode.ErrorCode;
+import share.sh4re.exceptions.exception.CustomException;
 
 /**
  *

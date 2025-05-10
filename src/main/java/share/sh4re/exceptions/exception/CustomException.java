@@ -1,6 +1,7 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions.exception;
 
 import org.springframework.http.HttpStatus;
+import share.sh4re.exceptions.errorcode.ErrorCode;
 
 public class CustomException extends RuntimeException {
   protected ErrorCode ERROR_CODE;

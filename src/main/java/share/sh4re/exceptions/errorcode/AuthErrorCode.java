@@ -1,7 +1,8 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions.errorcode;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import share.sh4re.exceptions.exception.CustomException;
 
 @RequiredArgsConstructor
 public enum AuthErrorCode implements ErrorCode {

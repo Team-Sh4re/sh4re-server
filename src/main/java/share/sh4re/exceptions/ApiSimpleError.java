@@ -1,4 +1,4 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions;
 
 import java.util.List;
 import lombok.Builder;

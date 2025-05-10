@@ -1,9 +1,10 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import share.sh4re.exceptions.exception.CustomException;
 
 @RestControllerAdvice
 public final class GlobalExceptionHandler {

@@ -1,4 +1,4 @@
-package share.sh4re.exception;
+package share.sh4re.exceptions.errorcode;
 
 import org.springframework.http.HttpStatus;
 
