@@ -1,11 +1,15 @@
 package share.sh4re.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
@@ -18,10 +22,12 @@ import share.sh4re.exception.AuthErrorCode;
 import share.sh4re.exception.AuthException;
 import share.sh4re.exception.ErrorCode;
 
+@Slf4j
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Override
   public void commence(HttpServletRequest request,
@@ -31,16 +37,27 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
+    // Get the original exception from the request if available
+    Throwable exception = (Throwable) request.getAttribute("exception");
+    if (exception == null) {
+      exception = authException.getCause();
+    }
+
     ErrorCode errorCode;
-    if (authException.getCause() instanceof ExpiredJwtException) {
+    if (exception instanceof ExpiredJwtException) {
       errorCode = AuthErrorCode.TOKEN_EXPIRED;
-    } else if (authException.getCause() instanceof JwtException || authException instanceof BadCredentialsException) {
+    } else if (exception instanceof JwtException || authException instanceof BadCredentialsException) {
       errorCode = AuthErrorCode.INVALID_TOKEN;
     } else {
       errorCode = AuthErrorCode.AUTHENTICATION_FAILED;
     }
-    AuthException exception = new AuthException(errorCode, authException.getCause());
-    ApiResponseError errorResponse = ApiResponseError.of(exception);
+
+//    if (exception != null) {
+//      log.error("Authentication failed: {}", exception.getMessage());
+//    }
+
+    AuthException authException2 = new AuthException(errorCode, exception);
+    ApiResponseError errorResponse = ApiResponseError.of(authException2);
 
     objectMapper.writeValue(response.getOutputStream(), errorResponse);
   }

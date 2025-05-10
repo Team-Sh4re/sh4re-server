@@ -36,8 +36,8 @@ public class WebSecurityConfig {
                 .requestMatchers(securityPathConfig.getPublicEndpoints()).permitAll()
                 .anyRequest().authenticated()
             )
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(customAuthenticationEntryPoint)
+            .exceptionHandling(exceptions ->
+                exceptions.authenticationEntryPoint(customAuthenticationEntryPoint)
             )
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 

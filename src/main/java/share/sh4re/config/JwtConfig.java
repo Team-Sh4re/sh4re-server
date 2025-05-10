@@ -13,7 +13,6 @@ import javax.crypto.SecretKey;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import share.sh4re.domain.User;
-import share.sh4re.exception.UserErrorCode;
 
 @Component
 public class JwtConfig {

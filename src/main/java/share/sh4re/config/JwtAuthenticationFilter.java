@@ -1,6 +1,5 @@
 package share.sh4re.config;
 
-import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -48,13 +47,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         throw new BadCredentialsException(AuthErrorCode.INVALID_TOKEN.defaultMessage(), new JwtException("Invalid token"));
                     }
                 }
-            } catch (ExpiredJwtException e) {
-                throw new BadCredentialsException(AuthErrorCode.TOKEN_EXPIRED.defaultMessage(), e);
-            } catch (JwtException e) {
-                throw new BadCredentialsException(AuthErrorCode.INVALID_TOKEN.defaultMessage(), e);
+            } catch (Exception e) {
+                SecurityContextHolder.clearContext();
+                request.setAttribute("exception", e);
             }
         }
 
-        filterChain.doFilter(request, response);
+        try {
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            logger.error("Exception occurred during filter chain processing", e);
+            throw e;
+        }
     }
 }
