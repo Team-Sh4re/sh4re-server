@@ -1,5 +1,6 @@
 package share.sh4re.controller;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,10 +10,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import share.sh4re.config.JwtConfig;
 import share.sh4re.domain.User;
-import share.sh4re.dto.SignInReq;
-import share.sh4re.dto.SignUpReq;
+import share.sh4re.dto.req.SignInReq;
+import share.sh4re.dto.res.RefreshTokenRes;
+import share.sh4re.dto.res.SignInRes;
+import share.sh4re.dto.req.SignUpReq;
+import share.sh4re.dto.res.SignUpRes;
 import share.sh4re.dto.TokenResponse;
-import share.sh4re.dto.UserInfoRes;
+import share.sh4re.dto.res.UserInfoRes;
 import share.sh4re.service.UserService;
 
 @RestController
@@ -22,30 +26,18 @@ public class UserController {
   public JwtConfig jwtConfig;
 
   @PostMapping("/api/auth/signup")
-  public ResponseEntity<String> signUp(@RequestBody SignUpReq signUpReq){
-    User user = userService.signUp(signUpReq);
-    return new ResponseEntity<>("성공적으로 회원가입이 완료되었습니다.", HttpStatus.OK);
+  public ResponseEntity<SignUpRes> signUp(@Valid @RequestBody SignUpReq signUpReq){
+    return userService.signUp(signUpReq);
   }
 
   @PostMapping("/api/auth/signin")
-  public ResponseEntity<TokenResponse> signIn(@RequestBody SignInReq signInReq){
-    TokenResponse tokenResponse = userService.login(signInReq);
-    return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
+  public ResponseEntity<SignInRes> signIn(@Valid @RequestBody SignInReq signInReq){
+    return userService.login(signInReq);
   }
 
   @PostMapping("/api/auth/refresh")
-  public ResponseEntity<TokenResponse> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
-    if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-    }
-
-    String refreshToken = authorizationHeader.substring(7);
-    try {
-      TokenResponse tokenResponse = userService.refreshToken(refreshToken);
-      return new ResponseEntity<>(tokenResponse, HttpStatus.OK);
-    } catch (IllegalArgumentException e) {
-      return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-    }
+  public ResponseEntity<RefreshTokenRes> refreshToken(@RequestHeader("Authorization") String authorizationHeader) {
+    return userService.refreshToken(authorizationHeader);
   }
 
   @PostMapping("/api/auth/info")

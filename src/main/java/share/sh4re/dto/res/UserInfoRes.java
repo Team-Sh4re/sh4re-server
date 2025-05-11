@@ -1,4 +1,4 @@
-package share.sh4re.dto;
+package share.sh4re.dto.res;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

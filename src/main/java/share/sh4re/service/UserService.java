@@ -3,12 +3,19 @@ package share.sh4re.service;
 import jakarta.transaction.Transactional;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import share.sh4re.config.JwtConfig;
 import share.sh4re.domain.User;
-import share.sh4re.dto.SignInReq;
-import share.sh4re.dto.SignUpReq;
-import share.sh4re.dto.TokenResponse;
+import share.sh4re.dto.req.SignInReq;
+import share.sh4re.dto.res.RefreshTokenRes;
+import share.sh4re.dto.res.RefreshTokenRes.RefreshTokenData;
+import share.sh4re.dto.res.SignInRes;
+import share.sh4re.dto.res.SignInRes.SignInResData;
+import share.sh4re.dto.req.SignUpReq;
+import share.sh4re.dto.res.SignUpRes;
+import share.sh4re.exceptions.errorcode.AuthErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.UserRepository;
 
@@ -19,54 +26,42 @@ public class UserService {
   private final UserRepository userRepository;
   private final JwtConfig jwtConfig;
 
-  public User signUp(SignUpReq signUpReq){
-    validateUserInput(
-        signUpReq.getName(),
-        signUpReq.getPassword(),
-        signUpReq.getClassNumber(),
-        signUpReq.getStudentNumber()
-    );
+  public ResponseEntity<SignUpRes> signUp(SignUpReq signUpReq){
     if (userRepository.findByName(signUpReq.getName()).isPresent()) throw UserErrorCode.USERNAME_ALREADY_EXISTS.defaultException();
     User user = new User();
     user.savePassword(signUpReq.getPassword());
     user.update(signUpReq.getName(), signUpReq.getClassNumber(), signUpReq.getStudentNumber());
-    return userRepository.save(user);
+    userRepository.save(user);
+    return new ResponseEntity<>(new SignUpRes(true, new SignUpRes.SignUpResData(user.getId())), HttpStatus.OK);
   }
 
-  public TokenResponse login(SignInReq signInReq){
+  public ResponseEntity<SignInRes> login(SignInReq signInReq){
     Optional<User> res = userRepository.findByName(signInReq.getName());
-    if(res.isEmpty()) throw new IllegalStateException("해당 이름의 유저가 존재하지 않습니다.");
+    if(res.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = res.get();
     if(user.checkPassword(signInReq.getPassword())) {
-      String token = jwtConfig.generateToken(user);
+      String accessToken = jwtConfig.generateToken(user);
       String refreshToken = jwtConfig.generateRefreshToken(user);
-      return new TokenResponse(token, refreshToken);
+      return new ResponseEntity<>(new SignInRes(true, new SignInResData(accessToken, refreshToken)),
+          HttpStatus.OK);
     } else throw new IllegalArgumentException("비밀번호가 틀렸습니다.");
   }
 
-  public TokenResponse refreshToken(String refreshToken) {
+  public ResponseEntity<RefreshTokenRes> refreshToken(String refreshToken) {
     if (refreshToken == null || refreshToken.isEmpty()) {
-      throw new IllegalArgumentException("Refresh token is required");
+      throw AuthErrorCode.INVALID_TOKEN.defaultException();
     }
 
-    if (!jwtConfig.validateRefreshToken(refreshToken)) {
-      throw new IllegalArgumentException("Invalid or expired refresh token");
-    }
+    String processedRefreshToken = refreshToken.substring(7);
 
-    String newAccessToken = jwtConfig.generateTokenFromRefreshToken(refreshToken);
-    return new TokenResponse(newAccessToken, refreshToken);
+    jwtConfig.validateRefreshToken(processedRefreshToken);
+
+    String newAccessToken = jwtConfig.generateTokenFromRefreshToken(processedRefreshToken);
+    return new ResponseEntity<>(new RefreshTokenRes(true, new RefreshTokenData(newAccessToken, processedRefreshToken)), HttpStatus.OK);
   }
 
   public User findById(Long id){
     return userRepository.findById(id).orElse(null);
   }
 
-  public void validateUserInput(String name, String password, Long classNumber, Long studentNumber){
-    if(name == null) throw new IllegalArgumentException("name is null");
-    if(name.isEmpty()) throw new IllegalArgumentException("name is empty");
-    if(password == null) throw new IllegalArgumentException("password is null");
-    if(password.isEmpty()) throw new IllegalArgumentException("password is empty");
-    if(classNumber == null) throw new IllegalArgumentException("classNumber is null");
-    if(studentNumber == null) throw new IllegalArgumentException("studentNumber is null");
-  }
 }

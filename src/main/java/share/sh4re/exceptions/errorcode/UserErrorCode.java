@@ -13,6 +13,7 @@ public enum UserErrorCode implements ErrorCode {
       HttpStatus.INTERNAL_SERVER_ERROR
   ),
   MEMBER_NOT_FOUND("회원을 찾을 수 없습니다.", HttpStatus.NOT_FOUND),
+  INVALID_ARGUMENT("요청값이 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
   DEFAULT("회원 취급 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final String message;

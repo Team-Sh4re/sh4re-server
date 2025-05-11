@@ -85,7 +85,7 @@ public class JwtConfig {
     }
 
     public Boolean validateRefreshToken(String token) {
-          return !isTokenExpired(token);
+        return !isTokenExpired(token);
     }
 
     public String generateTokenFromRefreshToken(String refreshToken) {
