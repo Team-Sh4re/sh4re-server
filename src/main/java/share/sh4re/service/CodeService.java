@@ -1,5 +1,7 @@
 package share.sh4re.service;
 
+import jakarta.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,11 @@ import share.sh4re.domain.User;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.CreateCodeRes.CreateCodeResData;
+import share.sh4re.dto.res.GetAllCodesRes;
+import share.sh4re.dto.res.GetAllCodesRes.GetAllCodesResData;
+import share.sh4re.dto.res.GetCodeRes;
+import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
+import share.sh4re.exceptions.errorcode.CodeErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.CodeRepository;
 import share.sh4re.repository.UserRepository;
@@ -38,5 +45,24 @@ public class CodeService {
     );
     codeRepository.save(newCode);
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(0L)), HttpStatus.OK);
+  }
+
+  public ResponseEntity<GetAllCodesRes> getAllCodes() {
+    List<Code> ret = codeRepository.findAll();
+    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(ret)), HttpStatus.OK);
+  }
+
+  public ResponseEntity<GetCodeRes> getCode(@Valid String codeId) {
+    if(codeId == null || codeId.isEmpty()) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    Long id;
+    try {
+      id = Long.parseLong(codeId);
+    } catch (NumberFormatException e){
+      throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    }
+    Optional<Code> codeRes = codeRepository.findById(id);
+    if(codeRes.isEmpty()) throw CodeErrorCode.CODE_NOT_FOUND.defaultException();
+    Code code = codeRes.get();
+    return new ResponseEntity<>(new GetCodeRes(true, new GetCodeResData(code)), HttpStatus.OK);
   }
 }

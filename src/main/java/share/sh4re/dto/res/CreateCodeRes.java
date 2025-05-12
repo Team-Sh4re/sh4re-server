@@ -12,7 +12,6 @@ public class CreateCodeRes extends BaseRes<CreateCodeResData> {
   @Getter
   @AllArgsConstructor
   public static class CreateCodeResData {
-
     private Long id;
   }
 }

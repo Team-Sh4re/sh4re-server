@@ -1,10 +1,10 @@
 package share.sh4re.dto.res;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import share.sh4re.domain.User;
+import share.sh4re.dto.res.MyInfoRes.MyInfoResData;
 
-public class MyInfoRes extends BaseRes<MyInfoRes.MyInfoResData> {
+public class MyInfoRes extends BaseRes<MyInfoResData> {
   public MyInfoRes(boolean ok, MyInfoRes.MyInfoResData data) {
     super(ok, data);
   }

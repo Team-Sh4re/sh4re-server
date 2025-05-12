@@ -3,7 +3,6 @@ package share.sh4re.exceptions.exception;
 import share.sh4re.exceptions.errorcode.ErrorCode;
 
 public class UserException extends CustomException {
-
   public UserException() {
     super();
   }

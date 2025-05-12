@@ -1,6 +1,8 @@
 package share.sh4re.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.crypto.bcrypt.BCrypt;
@@ -8,16 +10,23 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @Getter
 @Entity
 public class User extends Base {
+  @NotNull
   private String username;
 
+  @NotNull
   private String name;
 
+  @NotNull
+  @JsonIgnore
   private String password;
 
+  @NotNull
   private Long grade;
 
+  @NotNull
   private Long classNumber;
 
+  @NotNull
   private Long studentNumber;
 
   public void savePassword(String newPassword){

@@ -32,10 +32,17 @@ public class WebSecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers(securityPathConfig.getPublicEndpoints()).permitAll()
-                .anyRequest().authenticated()
-            )
+            .authorizeHttpRequests(authorize -> {
+                // Configure public endpoints with their HTTP methods
+                for (SecurityPathConfig.EndpointConfig endpoint : securityPathConfig.getPublicEndpoints()) {
+                    if (endpoint.getMethod() != null) {
+                        authorize.requestMatchers(endpoint.getMethod(), endpoint.getPattern()).permitAll();
+                    } else {
+                        authorize.requestMatchers(endpoint.getPattern()).permitAll();
+                    }
+                }
+                authorize.anyRequest().authenticated();
+            })
             .exceptionHandling(exceptions ->
                 exceptions.authenticationEntryPoint(customAuthenticationEntryPoint)
             )

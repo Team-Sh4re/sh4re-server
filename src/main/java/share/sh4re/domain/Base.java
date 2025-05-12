@@ -1,5 +1,6 @@
 package share.sh4re.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,8 +18,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Base {
   @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
   @CreatedDate
+  @JsonIgnore
   private LocalDateTime createdAt;
+
   @LastModifiedDate
+  @JsonIgnore
   private LocalDateTime updatedAt;
 }

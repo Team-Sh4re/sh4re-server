@@ -1,6 +1,7 @@
 package share.sh4re.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 
 /**
  * Configuration class that defines security path patterns for the application.
@@ -11,21 +12,50 @@ import org.springframework.context.annotation.Configuration;
 public class SecurityPathConfig {
 
     /**
-     * Array of endpoint patterns that are accessible without authentication.
+     * Class representing an endpoint with its HTTP method.
      */
-    private static final String[] PUBLIC_ENDPOINTS = {
-        "/api/auth/signup",
-        "/api/auth/signin",
-        "/api/auth/refresh",
-        "/users/{userId}"
+    public static class EndpointConfig {
+        private final String pattern;
+        private final HttpMethod method;
+
+        public EndpointConfig(String pattern, HttpMethod method) {
+            this.pattern = pattern;
+            this.method = method;
+        }
+
+        public EndpointConfig(String pattern) {
+            this.pattern = pattern;
+            this.method = null;
+        }
+
+        public String getPattern() {
+            return pattern;
+        }
+
+        public HttpMethod getMethod() {
+            return method;
+        }
+    }
+
+    /**
+     * Array of endpoint patterns that are accessible without authentication.
+     * For endpoints where the HTTP method is not specified, all methods are allowed.
+     */
+    private static final EndpointConfig[] PUBLIC_ENDPOINTS = {
+        new EndpointConfig("/api/auth/signup"),
+        new EndpointConfig("/api/auth/signin"),
+        new EndpointConfig("/api/auth/refresh"),
+        new EndpointConfig("/users/{userId}", HttpMethod.GET),
+        new EndpointConfig("/codes", HttpMethod.GET),
+        new EndpointConfig("/codes/{codeId}", HttpMethod.GET)
     };
 
     /**
-     * Returns the array of endpoint patterns that are accessible without authentication.
+     * Returns the array of endpoint configurations that are accessible without authentication.
      *
-     * @return Array of public endpoint patterns
+     * @return Array of public endpoint configurations
      */
-    public String[] getPublicEndpoints() {
+    public EndpointConfig[] getPublicEndpoints() {
         return PUBLIC_ENDPOINTS;
     }
 }

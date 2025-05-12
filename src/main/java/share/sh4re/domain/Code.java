@@ -1,12 +1,19 @@
 package share.sh4re.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -20,13 +27,28 @@ public class Code {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     private Long likes;
+
+    @NotNull
     private Long views;
+
+    @NotNull
     private String code;
+
+    @NotNull
     private String title;
+
+    @NotNull
     private String description;
+
+    @NotNull
     private Fields field;
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    @NotNull
+    @JoinColumn(name = "user_id")
     private User user;
 
     public void update(String title, String description, String code, Fields field, User user){
