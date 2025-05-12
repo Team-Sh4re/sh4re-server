@@ -59,14 +59,14 @@ public class JwtConfig {
     public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
-        claims.put("name", user.getName());
-        return createToken(claims, user.getName(), ACCESS_TOKEN_VALIDITY);
+        claims.put("name", user.getUsername());
+        return createToken(claims, user.getUsername(), ACCESS_TOKEN_VALIDITY);
     }
 
     public String generateRefreshToken(User user) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
-        return createToken(claims, user.getName(), REFRESH_TOKEN_VALIDITY);
+        return createToken(claims, user.getUsername(), REFRESH_TOKEN_VALIDITY);
     }
 
     private String createToken(Map<String, Object> claims, String subject, long validity) {

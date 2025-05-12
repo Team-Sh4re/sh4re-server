@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 import share.sh4re.config.JwtConfig;
 import share.sh4re.domain.User;
 import share.sh4re.dto.req.SignInReq;
+import share.sh4re.dto.res.MyInfoRes;
+import share.sh4re.dto.res.MyInfoRes.MyInfoResData;
 import share.sh4re.dto.res.RefreshTokenRes;
 import share.sh4re.dto.res.RefreshTokenRes.RefreshTokenData;
 import share.sh4re.dto.res.SignInRes;
 import share.sh4re.dto.res.SignInRes.SignInResData;
 import share.sh4re.dto.req.SignUpReq;
 import share.sh4re.dto.res.SignUpRes;
+import share.sh4re.dto.res.UserInfoRes;
+import share.sh4re.dto.res.UserInfoRes.UserInfoResData;
 import share.sh4re.exceptions.errorcode.AuthErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.UserRepository;
@@ -60,7 +64,35 @@ public class UserService {
     return new ResponseEntity<>(new RefreshTokenRes(true, new RefreshTokenData(newAccessToken, processedRefreshToken)), HttpStatus.OK);
   }
 
-  public User findById(Long id) {
-    return userRepository.findById(id).orElse(null);
+  public Optional<User> findById(Long id) {
+    return userRepository.findById(id);
+  }
+
+  public ResponseEntity<MyInfoRes> getMyInfo(String authorizationHeader) {
+    if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+    String token = authorizationHeader.substring(7);
+    Long userId = jwtConfig.extractClaim(token, claims -> claims.get("id", Long.class));
+    Optional<User> userRes = findById(userId);
+    if (userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
+    User user = userRes.get();
+    MyInfoRes myInfoRes = new MyInfoRes(
+        true,
+        new MyInfoResData(user)
+    );
+    return new ResponseEntity<>(myInfoRes, HttpStatus.OK);
+  }
+
+  public ResponseEntity<UserInfoRes> getUserInfo(Long userId) {
+    if(userId == null) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
+    Optional<User> userRes = findById(userId);
+    if (userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
+    User user = userRes.get();
+    UserInfoRes userInfoResData = new UserInfoRes(
+        true,
+        new UserInfoResData(user)
+    );
+    return new ResponseEntity<>(userInfoResData, HttpStatus.OK);
   }
 }

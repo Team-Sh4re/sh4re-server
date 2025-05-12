@@ -4,14 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import share.sh4re.domain.User;
 
-public class UserInfoRes extends BaseRes<UserInfoRes.UserInfoResData> {
-  public UserInfoRes(boolean ok, UserInfoRes.UserInfoResData data) {
+public class MyInfoRes extends BaseRes<MyInfoRes.MyInfoResData> {
+  public MyInfoRes(boolean ok, MyInfoRes.MyInfoResData data) {
     super(ok, data);
   }
 
   @Getter
-  @AllArgsConstructor
-  public static class UserInfoResData {
+  public static class MyInfoResData {
     private final Long id;
     private final String username;
     private final String name;
@@ -19,7 +18,7 @@ public class UserInfoRes extends BaseRes<UserInfoRes.UserInfoResData> {
     private final Long classNumber;
     private final Long studentNumber;
 
-    public UserInfoResData(User user) {
+    public MyInfoResData(User user) {
       this.id = user.getId();
       this.username = user.getUsername();
       this.name = user.getName();

@@ -1,6 +1,7 @@
 package share.sh4re.domain;
 
 import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 

@@ -13,7 +13,6 @@ public class CreateCodeRes extends BaseRes<CreateCodeResData> {
   @AllArgsConstructor
   public static class CreateCodeResData {
 
-    private String accessToken;
-    private String refreshToken;
+    private Long id;
   }
 }

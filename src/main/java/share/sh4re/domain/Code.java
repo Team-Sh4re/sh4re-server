@@ -22,17 +22,17 @@ public class Code {
 
     private Long likes;
     private Long views;
-    private String file;
+    private String code;
     private String title;
     private String description;
     private Fields field;
     @ManyToOne
     private User user;
 
-    public void update(String title, String description, String file, Fields field, User user){
+    public void update(String title, String description, String code, Fields field, User user){
         this.likes = 0L;
         this.views = 0L;
-        this.file = file;
+        this.code = code;
         this.title = title;
         this.description = description;
         this.field = field;
