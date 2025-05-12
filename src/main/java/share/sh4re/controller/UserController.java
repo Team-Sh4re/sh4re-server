@@ -15,8 +15,8 @@ import share.sh4re.dto.res.RefreshTokenRes;
 import share.sh4re.dto.res.SignInRes;
 import share.sh4re.dto.req.SignUpReq;
 import share.sh4re.dto.res.SignUpRes;
-import share.sh4re.dto.TokenResponse;
 import share.sh4re.dto.res.UserInfoRes;
+import share.sh4re.dto.res.UserInfoRes.UserInfoResData;
 import share.sh4re.service.UserService;
 
 @RestController
@@ -50,10 +50,13 @@ public class UserController {
     User user = userService.findById(userId);
     if (user == null) throw new IllegalArgumentException("User not found");
     UserInfoRes userInfoRes = new UserInfoRes(
-        user.getId(),
-        user.getName(),
-        user.getClassNumber(),
-        user.getStudentNumber()
+        true,
+        new UserInfoResData(
+            user.getId(),
+            user.getName(),
+            user.getClassNumber(),
+            user.getStudentNumber()
+        )
     );
     return new ResponseEntity<>(userInfoRes, HttpStatus.OK);
   }
