@@ -53,6 +53,7 @@ public class UserController {
         true,
         new UserInfoResData(
             user.getId(),
+            user.getUsername(),
             user.getName(),
             user.getClassNumber(),
             user.getStudentNumber()

@@ -8,7 +8,7 @@ import lombok.Setter;
 @Setter
 public class SignInReq {
   @NotBlank(message = "이름은 필수 입력값입니다")
-  String name;
+  String username;
 
   @NotBlank(message = "비밀번호는 필수 입력값입니다")
   String password;

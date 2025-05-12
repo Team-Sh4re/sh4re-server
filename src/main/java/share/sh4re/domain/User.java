@@ -7,9 +7,13 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @Getter
 @Entity
 public class User extends Base {
+  private String username;
+
   private String name;
 
   private String password;
+
+  private Long grade;
 
   private Long classNumber;
 
@@ -25,8 +29,10 @@ public class User extends Base {
     return BCrypt.checkpw(password, this.password);
   }
 
-  public void update(String name, Long classNumber, Long studentNumber){
+  public void update(String username, String name, Long grade, Long classNumber, Long studentNumber){
+    this.username = username;
     this.name = name;
+    this.grade = grade;
     this.classNumber = classNumber;
     this.studentNumber = studentNumber;
   }

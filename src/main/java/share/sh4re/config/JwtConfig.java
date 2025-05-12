@@ -17,7 +17,7 @@ import share.sh4re.domain.User;
 @Component
 public class JwtConfig {
   private final SecretKey SECRET_KEY;
-  private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 15; // 15 mins
+  private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 15 mins (임시로 7일)
   private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7 days
 
   public JwtConfig(@Value("${jwt.secret-key}") String secretKey) {

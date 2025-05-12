@@ -13,6 +13,7 @@ public class UserInfoRes extends BaseRes<UserInfoResData> {
   @AllArgsConstructor
   public static class UserInfoResData {
     private Long id;
+    private String username;
     private String name;
     private Long classNumber;
     private Long studentNumber;
