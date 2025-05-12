@@ -37,6 +37,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
       this.title = code.getTitle();
       this.description = code.getDescription();
       this.field = code.getField();
+      this.user = code.getUser();
     }
   }
 }
