@@ -31,7 +31,7 @@ public class UserService {
   private final JwtConfig jwtConfig;
 
   public ResponseEntity<SignUpRes> signUp(SignUpReq signUpReq){
-    if (userRepository.findByUsername(signUpReq.getName()).isPresent()) throw UserErrorCode.USERNAME_ALREADY_EXISTS.defaultException();
+    if (userRepository.findByUsername(signUpReq.getUsername()).isPresent()) throw UserErrorCode.USERNAME_ALREADY_EXISTS.defaultException();
     User user = new User();
     user.savePassword(signUpReq.getPassword());
     user.update(signUpReq.getUsername(), signUpReq.getName(), signUpReq.getGrade(), signUpReq.getClassNumber(), signUpReq.getStudentNumber());
@@ -89,10 +89,10 @@ public class UserService {
     Optional<User> userRes = findById(userId);
     if (userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
-    UserInfoRes userInfoResData = new UserInfoRes(
+    UserInfoRes userInfoRes = new UserInfoRes(
         true,
         new UserInfoResData(user)
     );
-    return new ResponseEntity<>(userInfoResData, HttpStatus.OK);
+    return new ResponseEntity<>(userInfoRes, HttpStatus.OK);
   }
 }

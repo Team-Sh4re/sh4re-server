@@ -30,10 +30,10 @@ public final class GlobalExceptionHandler {
     ex.getBindingResult().getAllErrors().forEach((error) -> {
       String fieldName = ((FieldError) error).getField();
       String errorMessage = error.getDefaultMessage();
+      assert errorMessage != null;
       errors.add(ApiSimpleError.builder().field(fieldName).message(errorMessage).build());
     });
 
-    CustomException customException = UserErrorCode.INVALID_ARGUMENT.defaultException();
     ApiResponseError response = ApiResponseError.builder()
         .code(UserErrorCode.INVALID_ARGUMENT.name())
         .status(UserErrorCode.INVALID_ARGUMENT.defaultHttpStatus().value())

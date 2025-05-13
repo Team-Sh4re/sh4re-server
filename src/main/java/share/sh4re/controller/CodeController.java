@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.GetAllCodesRes;
@@ -24,8 +25,8 @@ public class CodeController {
   }
 
   @GetMapping("/codes")
-  public ResponseEntity<GetAllCodesRes> getAllCodes(){
-    return codeService.getAllCodes();
+  public ResponseEntity<GetAllCodesRes> getAllCodes(@RequestParam("page") Long page){
+    return codeService.getAllCodes(page);
   }
 
   @GetMapping("/codes/{codeId}")

@@ -47,14 +47,15 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(0L)), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes() {
+  public ResponseEntity<GetAllCodesRes> getAllCodes(Long page) {
+    if(page == null || page <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     List<Code> ret = codeRepository.findAll();
     return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(ret)), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetCodeRes> getCode(@Valid String codeId) {
+  public ResponseEntity<GetCodeRes> getCode(String codeId) {
     if(codeId == null || codeId.isEmpty()) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
-    Long id;
+    long id;
     try {
       id = Long.parseLong(codeId);
     } catch (NumberFormatException e){

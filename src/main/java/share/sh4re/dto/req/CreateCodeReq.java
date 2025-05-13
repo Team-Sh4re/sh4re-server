@@ -7,7 +7,7 @@ import share.sh4re.domain.Code;
 
 @Getter
 @Setter
-public class  CreateCodeReq {
+public class CreateCodeReq {
   @NotBlank(message = "제목은 필수 입력값입니다.")
   String title;
 
