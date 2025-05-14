@@ -38,6 +38,8 @@ jobs:
                   value: ${{ secrets.PORT }}
                 - name: JWT_SECRET_KEY
                   value: ${{ secrets.JWT_SECRET_KEY }}
+                - name: IS_DEVELOPMENT
+                  value: ${{ secrets.IS_DEVELOPMENT }}
               buildenv: []
               start: java -Xms512M -Xmx1G -jar ./build/libs/sh4re-0.0.1-SNAPSHOT.jar
             context:
