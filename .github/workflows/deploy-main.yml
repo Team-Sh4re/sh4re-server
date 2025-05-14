@@ -1,0 +1,46 @@
+name: Deploy to cloudtype
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: daehyeong2010/sh4re
+          stage: main
+          yaml: >
+            name: sh4re-server
+
+            app: java@17
+
+            options:
+              ports: ${{ PORT }}
+              env:
+                - name: DATABASE_URL
+                  value: ${{ DATABASE_URL }}
+                - name: DATABASE_USERNAME
+                  value: ${{ DATABASE_USERNAME }}
+                - name: DATABASE_PASSWORD
+                  value: ${{ DATABASE_PASSWORD }}
+                - name: PORT
+                  value: ${{ PORT }}
+                - name: JWT_SECRET_KEY
+                  value: ${{ JWT_SECRET_KEY }}
+              buildenv: []
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
+              preset: java-springboot
