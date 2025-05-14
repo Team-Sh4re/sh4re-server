@@ -26,18 +26,18 @@ jobs:
             app: java@17
 
             options:
-              ports: "${{ PORT }}"
+              ports: ${{ secrets.PORT }}
               env:
                 - name: DATABASE_URL
-                  value: ${{ DATABASE_URL }}
+                  value: ${{ secrets.DATABASE_URL }}
                 - name: DATABASE_USERNAME
-                  value: ${{ DATABASE_USERNAME }}
+                  value: ${{ secrets.DATABASE_USERNAME }}
                 - name: DATABASE_PASSWORD
-                  value: ${{ DATABASE_PASSWORD }}
+                  value: ${{ secrets.DATABASE_PASSWORD }}
                 - name: PORT
-                  value: ${{ PORT }}
+                  value: ${{ secrets.PORT }}
                 - name: JWT_SECRET_KEY
-                  value: ${{ JWT_SECRET_KEY }}
+                  value: ${{ secrets.JWT_SECRET_KEY }}
               buildenv: []
             context:
               git:
