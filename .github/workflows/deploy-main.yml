@@ -26,7 +26,7 @@ jobs:
             app: java@17
 
             options:
-              ports: ${{ PORT }}
+              ports: "${{ PORT }}"
               env:
                 - name: DATABASE_URL
                   value: ${{ DATABASE_URL }}
