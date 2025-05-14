@@ -1,6 +1,5 @@
 package share.sh4re.service;
 
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
@@ -29,6 +28,7 @@ import share.sh4re.repository.UserRepository;
 public class CodeService {
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
+  private final OpenAiService openAiService;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -36,9 +36,10 @@ public class CodeService {
     Optional<User> userRes = userRepository.findByUsername(username);
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
+    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
     newCode.update(
         createCodeReq.getTitle(),
-        "temp_description",
+        generateDescription,
         createCodeReq.getCode(),
         createCodeReq.getField(),
         user

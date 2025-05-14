@@ -2,7 +2,7 @@ package share.sh4re.service;
 
 import jakarta.transaction.Transactional;
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,7 +25,7 @@ import share.sh4re.repository.UserRepository;
 
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
   private final JwtConfig jwtConfig;
