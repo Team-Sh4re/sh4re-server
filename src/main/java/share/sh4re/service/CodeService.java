@@ -44,7 +44,7 @@ public class CodeService {
         user
     );
     codeRepository.save(newCode);
-    return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(0L)), HttpStatus.OK);
+    return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
   public ResponseEntity<GetAllCodesRes> getAllCodes(Long page) {
