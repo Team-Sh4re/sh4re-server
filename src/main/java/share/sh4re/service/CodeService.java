@@ -38,7 +38,7 @@ public class CodeService {
     User user = userRes.get();
     newCode.update(
         createCodeReq.getTitle(),
-        "description",
+        "temp_description",
         createCodeReq.getCode(),
         createCodeReq.getField(),
         user
