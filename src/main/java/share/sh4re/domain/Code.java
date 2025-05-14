@@ -2,6 +2,7 @@ package share.sh4re.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,7 @@ public class Code {
     private Long views;
 
     @NotNull
+    @Column(length=32768)
     private String code;
 
     @NotNull
