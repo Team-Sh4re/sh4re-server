@@ -24,10 +24,6 @@ public class Code extends Base {
         PYTHON, WEB
     }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @NotNull
     private Long likes;
 
