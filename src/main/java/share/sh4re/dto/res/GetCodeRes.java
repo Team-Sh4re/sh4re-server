@@ -6,6 +6,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import share.sh4re.domain.Code;
@@ -18,16 +19,15 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
   }
 
   @Getter
-  @AllArgsConstructor
   public static class GetCodeResData {
-    private Long id;
-    private Long likes;
-    private Long views;
-    private String code;
-    private String title;
-    private String description;
-    private Code.Fields field;
-    private User user;
+    private final Long id;
+    private final Long likes;
+    private final Long views;
+    private final String code;
+    private final String title;
+    private final String description;
+    private final Code.Fields field;
+    private final User user;
 
     public GetCodeResData(Code code) {
       this.id = code.getId();
