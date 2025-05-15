@@ -42,13 +42,13 @@ public class Code {
     private String title;
 
     @NotNull
+    @Column(length=32768)
     private String description;
 
     @NotNull
     private Fields field;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
     @NotNull
     @JoinColumn(name = "user_id")
     private User user;
@@ -61,5 +61,9 @@ public class Code {
         this.description = description;
         this.field = field;
         this.user = user;
+    }
+
+    public void increaseLikes(){
+        this.likes++;
     }
 }

@@ -13,6 +13,8 @@ import share.sh4re.domain.User;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.CreateCodeRes.CreateCodeResData;
+import share.sh4re.dto.res.DeleteCodeRes;
+import share.sh4re.dto.res.DeleteCodeRes.DeleteCodeResData;
 import share.sh4re.dto.res.GetAllCodesRes;
 import share.sh4re.dto.res.GetAllCodesRes.GetAllCodesResData;
 import share.sh4re.dto.res.GetCodeRes;
@@ -29,6 +31,7 @@ public class CodeService {
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final OpenAiService openAiService;
+  private final UserService userService;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -36,10 +39,10 @@ public class CodeService {
     Optional<User> userRes = userRepository.findByUsername(username);
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
-    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
+//    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
     newCode.update(
         createCodeReq.getTitle(),
-        generateDescription,
+        "generateDescription",
         createCodeReq.getCode(),
         createCodeReq.getField(),
         user
@@ -55,6 +58,21 @@ public class CodeService {
   }
 
   public ResponseEntity<GetCodeRes> getCode(String codeId) {
+    Code code = validateCodeId(codeId);
+    return new ResponseEntity<>(new GetCodeRes(true, new GetCodeResData(code)), HttpStatus.OK);
+  }
+
+  public ResponseEntity<DeleteCodeRes> deleteCode(String codeId) {
+    Code code = validateCodeId(codeId);
+    String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if(!username.equals(code.getUser().getUsername())) throw CodeErrorCode.FORBIDDEN_REQUEST.defaultException();
+    codeRepository.deleteById(code.getId());
+    return new ResponseEntity<>(new DeleteCodeRes(
+        true, new DeleteCodeResData(code.getId())
+    ), HttpStatus.OK);
+  }
+
+  private Code validateCodeId(String codeId){
     if(codeId == null || codeId.isEmpty()) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     long id;
     try {
@@ -64,7 +82,6 @@ public class CodeService {
     }
     Optional<Code> codeRes = codeRepository.findById(id);
     if(codeRes.isEmpty()) throw CodeErrorCode.CODE_NOT_FOUND.defaultException();
-    Code code = codeRes.get();
-    return new ResponseEntity<>(new GetCodeRes(true, new GetCodeResData(code)), HttpStatus.OK);
+    return codeRes.get();
   }
 }
