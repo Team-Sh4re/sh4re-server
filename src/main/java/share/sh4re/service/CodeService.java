@@ -3,12 +3,17 @@ package share.sh4re.service;
 import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import share.sh4re.domain.Code;
+import share.sh4re.domain.Like;
 import share.sh4re.domain.User;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.res.CreateCodeRes;
@@ -19,19 +24,24 @@ import share.sh4re.dto.res.GetAllCodesRes;
 import share.sh4re.dto.res.GetAllCodesRes.GetAllCodesResData;
 import share.sh4re.dto.res.GetCodeRes;
 import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
+import share.sh4re.dto.res.LikeCodeRes;
+import share.sh4re.dto.res.LikeCodeRes.LikeCodeResData;
 import share.sh4re.exceptions.errorcode.CodeErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.CodeRepository;
+import share.sh4re.repository.LikeRepository;
 import share.sh4re.repository.UserRepository;
 
 @Service
 @Transactional
 @AllArgsConstructor
 public class CodeService {
+  private final int PAGE_SIZE = 12;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final OpenAiService openAiService;
   private final UserService userService;
+  private final LikeRepository likeRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -51,10 +61,11 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes(Long page) {
-    if(page == null || page <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
-    List<Code> ret = codeRepository.findAll();
-    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(ret)), HttpStatus.OK);
+  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria) {
+    if(pageNo < 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
+    Page<Code> page = codeRepository.findAll(pageable);
+    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent())), HttpStatus.OK);
   }
 
   public ResponseEntity<GetCodeRes> getCode(String codeId) {
@@ -70,6 +81,23 @@ public class CodeService {
     return new ResponseEntity<>(new DeleteCodeRes(
         true, new DeleteCodeResData(code.getId())
     ), HttpStatus.OK);
+  }
+
+  public ResponseEntity<LikeCodeRes> likeCode(String codeId) {
+    Code code = validateCodeId(codeId);
+    String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    User user = userRepository.findByUsername(username).orElseThrow(UserErrorCode.MEMBER_NOT_FOUND::defaultException);
+    Optional<Like> likeRes = likeRepository.findByCodeAndUser(code, user);
+    if(likeRes.isEmpty()){
+      Like newLike = new Like(user, code);
+      likeRepository.save(newLike);
+      code.increaseLikes();
+    } else {
+      Like like = likeRes.get();
+      likeRepository.delete(like);
+      code.decreaseLikes();
+    }
+    return new ResponseEntity<>(new LikeCodeRes(true, new LikeCodeResData(code.getId())), HttpStatus.OK);
   }
 
   private Code validateCodeId(String codeId){

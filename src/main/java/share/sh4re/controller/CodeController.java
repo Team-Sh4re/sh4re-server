@@ -28,8 +28,11 @@ public class CodeController {
   }
 
   @GetMapping("/codes")
-  public ResponseEntity<GetAllCodesRes> getAllCodes(@RequestParam("page") Long page){
-    return codeService.getAllCodes(page);
+  public ResponseEntity<GetAllCodesRes> getAllCodes(
+      @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+      @RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria
+  ){
+    return codeService.getAllCodes(pageNo, criteria);
   }
 
   @GetMapping("/codes/{codeId}")
@@ -42,8 +45,8 @@ public class CodeController {
     return codeService.deleteCode(codeId);
   }
 
-//  @PostMapping("/codes/{codeId}")
-//  public ResponseEntity<LikeCodeRes> likeCode(@PathVariable String codeId){
-//    return codeService.likeCode(codeId);
-//  }
+  @PostMapping("/codes/{codeId}/like")
+  public ResponseEntity<LikeCodeRes> likeCode(@PathVariable String codeId){
+    return codeService.likeCode(codeId);
+  }
 }
