@@ -30,6 +30,7 @@ dependencies {
 	annotationProcessor('org.projectlombok:lombok')
 	implementation "org.postgresql:postgresql:42.7.5"
 	runtimeOnly 'org.postgresql:postgresql'
+	implementation "org.flywaydb:flyway-database-postgresql"
 }
 
 tasks.named('test') {
