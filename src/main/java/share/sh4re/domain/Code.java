@@ -19,7 +19,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Getter
 @NoArgsConstructor
-public class Code {
+public class Code extends Base {
     public enum Fields {
         PYTHON, WEB
     }
@@ -63,7 +63,13 @@ public class Code {
         this.user = user;
     }
 
-    public void increaseLikes(){
+    public void increaseLikes() {
         this.likes++;
+    }
+
+    public void decreaseLikes() {
+        if (this.likes > 0) {
+            this.likes--;
+        }
     }
 }

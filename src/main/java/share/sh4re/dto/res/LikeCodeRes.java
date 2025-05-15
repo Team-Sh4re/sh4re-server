@@ -13,6 +13,6 @@ public class LikeCodeRes extends BaseRes<LikeCodeResData> {
   @Getter
   @AllArgsConstructor
   public static class LikeCodeResData {
-    private String id;
+    private Long id;
   }
 }
