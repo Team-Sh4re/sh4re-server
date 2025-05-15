@@ -14,6 +14,7 @@ import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.DeleteCodeRes;
 import share.sh4re.dto.res.GetAllCodesRes;
 import share.sh4re.dto.res.GetCodeRes;
+import share.sh4re.dto.res.LikeCodeRes;
 import share.sh4re.service.CodeService;
 
 @Controller
@@ -40,4 +41,9 @@ public class CodeController {
   public ResponseEntity<DeleteCodeRes> deleteCode(@PathVariable String codeId){
     return codeService.deleteCode(codeId);
   }
+
+//  @PostMapping("/codes/{codeId}")
+//  public ResponseEntity<LikeCodeRes> likeCode(@PathVariable String codeId){
+//    return codeService.likeCode(codeId);
+//  }
 }

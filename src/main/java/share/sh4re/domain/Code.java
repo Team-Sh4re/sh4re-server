@@ -42,6 +42,7 @@ public class Code {
     private String title;
 
     @NotNull
+    @Column(length=32768)
     private String description;
 
     @NotNull
