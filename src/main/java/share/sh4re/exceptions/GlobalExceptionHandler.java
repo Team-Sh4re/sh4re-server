@@ -51,5 +51,4 @@ public final class GlobalExceptionHandler {
     ApiResponseError response = ApiResponseError.of(new CustomException());
     return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
   }
-
 }
