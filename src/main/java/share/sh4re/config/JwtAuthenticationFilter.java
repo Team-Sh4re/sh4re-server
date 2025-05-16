@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @RequiredArgsConstructor
@@ -32,9 +33,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         String method = request.getMethod();
 
+        AntPathMatcher pathMatcher = new AntPathMatcher();
+
         return publicUrls.stream()
             .anyMatch(endpoint ->
-                endpoint.getPattern().equals(path) &&
+                pathMatcher.match(endpoint.getPattern(), path) &&
                     (endpoint.getMethod() == null || endpoint.getMethod().name().equals(method))
             );
     }

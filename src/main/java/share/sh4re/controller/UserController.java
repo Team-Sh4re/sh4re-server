@@ -1,7 +1,7 @@
 package share.sh4re.controller;
 
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,10 +20,10 @@ import share.sh4re.dto.res.UserInfoRes;
 import share.sh4re.service.UserService;
 
 @RestController
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class UserController {
-  public UserService userService;
-  public JwtConfig jwtConfig;
+  public final UserService userService;
+  public final JwtConfig jwtConfig;
 
   @PostMapping("/api/auth/signup")
   public ResponseEntity<SignUpRes> signUp(@Valid @RequestBody SignUpReq signUpReq){

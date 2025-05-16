@@ -11,8 +11,10 @@ import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
@@ -50,6 +52,11 @@ public class Code extends Base {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "code", cascade = CascadeType.ALL)
     private List<Like> likeList = new ArrayList<>();
+
+    @ManyToOne
+    @Setter
+    @JoinColumn(name = "assignment_id")
+    private Assignment assignment;
 
     public void update(String title, String description, String code, Fields field, User user){
         this.likes = 0L;
