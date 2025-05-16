@@ -5,6 +5,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,6 +20,18 @@ public class JwtConfig {
   private final SecretKey SECRET_KEY;
   private final long ACCESS_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 15 mins (임시로 7일)
   private final long REFRESH_TOKEN_VALIDITY = 1000 * 60 * 60 * 24 * 7; // 7 days
+  private final String TOKEN_PREFIX = "Bearer ";
+
+  public String resolveToken(HttpServletRequest request) {
+    String bearerToken = request.getHeader("Authorization");
+
+    // "Bearer {token}" 형식일 경우 토큰만 잘라서 반환
+    if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
+      return bearerToken.substring(TOKEN_PREFIX.length());
+    }
+
+    return null;
+  }
 
   public JwtConfig(@Value("${jwt.secret-key}") String secretKey) {
     if (secretKey == null || secretKey.isEmpty()) {

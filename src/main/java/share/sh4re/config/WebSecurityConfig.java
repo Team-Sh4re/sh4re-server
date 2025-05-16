@@ -1,5 +1,6 @@
 package share.sh4re.config;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,7 +25,11 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtConfig);
+        return new JwtAuthenticationFilter(
+            jwtConfig,
+            securityPathConfig.getPublicEndpoints(),
+            customAuthenticationEntryPoint
+        );
     }
 
     @Bean
@@ -33,9 +38,8 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> {
-                // Configure public endpoints with their HTTP methods
-                for (SecurityPathConfig.EndpointConfig endpoint : securityPathConfig.getPublicEndpoints()) {
-                    if (endpoint.getMethod() != null) {
+                for(SecurityPathConfig.EndpointConfig endpoint : securityPathConfig.getPublicEndpoints()) {
+                    if(endpoint.getMethod() != null) {
                         authorize.requestMatchers(endpoint.getMethod(), endpoint.getPattern()).permitAll();
                     } else {
                         authorize.requestMatchers(endpoint.getPattern()).permitAll();

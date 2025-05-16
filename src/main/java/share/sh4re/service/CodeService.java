@@ -1,6 +1,5 @@
 package share.sh4re.service;
 
-import java.util.List;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -40,7 +39,6 @@ public class CodeService {
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final OpenAiService openAiService;
-  private final UserService userService;
   private final LikeRepository likeRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
@@ -71,7 +69,14 @@ public class CodeService {
 
   public ResponseEntity<GetCodeRes> getCode(String codeId) {
     Code code = validateCodeId(codeId);
-    return new ResponseEntity<>(new GetCodeRes(true, new GetCodeResData(code)), HttpStatus.OK);
+    Boolean isLiked = false;
+    boolean isAuthenticated = SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
+    if(isAuthenticated){
+      String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+      User user = userRepository.findByUsername(username).orElseThrow(UserErrorCode.MEMBER_NOT_FOUND::defaultException);
+      isLiked = likeRepository.existsByCodeAndUser(code, user);
+    }
+    return new ResponseEntity<>(new GetCodeRes(true, new GetCodeResData(code, isLiked)), HttpStatus.OK);
   }
 
   public ResponseEntity<DeleteCodeRes> deleteCode(String codeId) {
@@ -84,7 +89,7 @@ public class CodeService {
     ), HttpStatus.OK);
   }
 
-  public ResponseEntity<LikeCodeRes> likeCode(String codeId) {
+  public synchronized ResponseEntity<LikeCodeRes> likeCode(String codeId) {
     Code code = validateCodeId(codeId);
     String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     User user = userRepository.findByUsername(username).orElseThrow(UserErrorCode.MEMBER_NOT_FOUND::defaultException);

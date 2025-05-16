@@ -1,14 +1,6 @@
 package share.sh4re.dto.res;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 import share.sh4re.domain.Code;
 import share.sh4re.domain.User;
 import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
@@ -20,6 +12,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
 
   @Getter
   public static class GetCodeResData {
+
     private final Long id;
     private final Long likes;
     private final Long views;
@@ -28,8 +21,9 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
     private final String description;
     private final Code.Fields field;
     private final User user;
+    private final Boolean liked;
 
-    public GetCodeResData(Code code) {
+    public GetCodeResData(Code code, Boolean liked) {
       this.id = code.getId();
       this.likes = code.getLikes();
       this.views = code.getViews();
@@ -38,6 +32,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
       this.description = code.getDescription();
       this.field = code.getField();
       this.user = code.getUser();
+      this.liked = liked;
     }
   }
 }

@@ -1,5 +1,6 @@
 package share.sh4re.config;
 
+import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 
@@ -53,9 +54,9 @@ public class SecurityPathConfig {
     /**
      * Returns the array of endpoint configurations that are accessible without authentication.
      *
-     * @return Array of public endpoint configurations
+     * @return List of public endpoint configurations
      */
-    public EndpointConfig[] getPublicEndpoints() {
-        return PUBLIC_ENDPOINTS;
+    public List<EndpointConfig> getPublicEndpoints() {
+        return List.of(PUBLIC_ENDPOINTS);
     }
 }

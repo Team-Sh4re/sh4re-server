@@ -31,6 +31,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
   public void commence(HttpServletRequest request,
     HttpServletResponse response,
     AuthenticationException authException) throws IOException, ServletException {
+
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setCharacterEncoding("UTF-8");
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
