@@ -25,7 +25,11 @@ public class WebSecurityConfig {
 
     @Bean
     public JwtAuthenticationFilter jwtAuthenticationFilter() {
-        return new JwtAuthenticationFilter(jwtConfig, securityPathConfig.getPublicEndpoints());
+        return new JwtAuthenticationFilter(
+            jwtConfig,
+            securityPathConfig.getPublicEndpoints(),
+            customAuthenticationEntryPoint
+        );
     }
 
     @Bean
@@ -34,7 +38,14 @@ public class WebSecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(authorize -> {
-                authorize.anyRequest().permitAll();
+                for(SecurityPathConfig.EndpointConfig endpoint : securityPathConfig.getPublicEndpoints()) {
+                    if(endpoint.getMethod() != null) {
+                        authorize.requestMatchers(endpoint.getMethod(), endpoint.getPattern()).permitAll();
+                    } else {
+                        authorize.requestMatchers(endpoint.getPattern()).permitAll();
+                    }
+                }
+                authorize.anyRequest().authenticated();
             })
             .exceptionHandling(exceptions ->
                 exceptions.authenticationEntryPoint(customAuthenticationEntryPoint)

@@ -69,7 +69,7 @@ public class CodeService {
   public ResponseEntity<GetCodeRes> getCode(String codeId) {
     Code code = validateCodeId(codeId);
     Boolean isLiked = false;
-    boolean isAuthenticated = SecurityContextHolder.getContext().getAuthentication().getCredentials() == null;
+    boolean isAuthenticated = SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
     if(isAuthenticated){
       String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
       User user = userRepository.findByUsername(username).orElseThrow(UserErrorCode.MEMBER_NOT_FOUND::defaultException);

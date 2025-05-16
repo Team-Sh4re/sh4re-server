@@ -1,7 +1,5 @@
 package share.sh4re.config;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,41 +8,35 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
-import share.sh4re.exceptions.errorcode.AuthErrorCode;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-
     private final JwtConfig jwtConfig;
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String BEARER_PREFIX = "Bearer ";
     private final List<SecurityPathConfig.EndpointConfig> publicUrls;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
-    protected boolean isPublicURL(HttpServletRequest request) {
-        AntPathMatcher pathMatcher = new AntPathMatcher();
-        String requestURI = request.getRequestURI();
-        HttpMethod requestMethod;
-        try {
-            requestMethod = HttpMethod.valueOf(request.getMethod());
-        } catch (IllegalArgumentException e) {
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String token = jwtConfig.resolveToken(request);
+
+        if (token != null) {
             return false;
         }
 
-        for (SecurityPathConfig.EndpointConfig endpoint : publicUrls) {
-            if (pathMatcher.match(endpoint.getPattern(), requestURI)) {
-                HttpMethod method = endpoint.getMethod();
-                if (method == null || method.equals(requestMethod)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        String path = request.getRequestURI();
+        String method = request.getMethod();
+
+        return publicUrls.stream()
+            .anyMatch(endpoint ->
+                endpoint.getPattern().equals(path) &&
+                    (endpoint.getMethod() == null || endpoint.getMethod().name().equals(method))
+            );
     }
 
     @Override
@@ -57,37 +49,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String authorizationHeader = request.getHeader(AUTHORIZATION_HEADER);
-        if (authorizationHeader != null && authorizationHeader.startsWith(BEARER_PREFIX)) {
-            String token = authorizationHeader.substring(BEARER_PREFIX.length());
-            try {
-                String username = jwtConfig.extractUsername(token);
+        String token = jwtConfig.resolveToken(request);
+        try {
+            String username = jwtConfig.extractUsername(token);
 
-                if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    if (jwtConfig.validateToken(token, username)) {
-                        UsernamePasswordAuthenticationToken authenticationToken =
-                            new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
-                        SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    } else {
-                        throw new BadCredentialsException(AuthErrorCode.INVALID_TOKEN.defaultMessage(), new JwtException("Invalid token"));
-                    }
-                }
-            } catch (Exception e) {
-                SecurityContextHolder.clearContext();
-                request.setAttribute("exception", e);
-
-                // Re-throw BadCredentialsException for testing purposes
-                if (e instanceof BadCredentialsException) {
-                    throw (BadCredentialsException) e;
-                } else if (e instanceof JwtException || e instanceof ExpiredJwtException) {
-                    throw new BadCredentialsException(AuthErrorCode.INVALID_TOKEN.defaultMessage(), e);
+            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                if (jwtConfig.validateToken(token, username)) {
+                    UsernamePasswordAuthenticationToken authenticationToken =
+                        new UsernamePasswordAuthenticationToken(username, null, new ArrayList<>());
+                    SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 }
             }
-        } else {
-            if(!isPublicURL(request)){
-                throw new BadCredentialsException(AuthErrorCode.INVALID_TOKEN.defaultMessage(), new JwtException("Invalid token"));
-            }
+        } catch (Exception e) {
             SecurityContextHolder.clearContext();
+            request.setAttribute("exception", e);
+
+            customAuthenticationEntryPoint.commence(request, response,
+                new BadCredentialsException("Expired or invalid token", e));
+            return;
         }
 
         try {
