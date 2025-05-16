@@ -1,14 +1,14 @@
 package share.sh4re.controller;
 
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.DeleteCodeRes;
@@ -17,10 +17,10 @@ import share.sh4re.dto.res.GetCodeRes;
 import share.sh4re.dto.res.LikeCodeRes;
 import share.sh4re.service.CodeService;
 
-@Controller
-@AllArgsConstructor
+@RestController
+@RequiredArgsConstructor
 public class CodeController {
-  private CodeService codeService;
+  private final CodeService codeService;
 
   @PostMapping("/codes")
   public ResponseEntity<CreateCodeRes> createCode(@RequestBody CreateCodeReq createCodeReq){

@@ -43,12 +43,14 @@ public class SecurityPathConfig {
      * For endpoints where the HTTP method is not specified, all methods are allowed.
      */
     private static final EndpointConfig[] PUBLIC_ENDPOINTS = {
+        new EndpointConfig("/api-docs/**"),
+        new EndpointConfig("/swagger-ui/**"),
         new EndpointConfig("/api/auth/signup"),
         new EndpointConfig("/api/auth/signin"),
         new EndpointConfig("/api/auth/refresh"),
         new EndpointConfig("/users/{userId}", HttpMethod.GET),
         new EndpointConfig("/codes", HttpMethod.GET),
-        new EndpointConfig("/codes/{codeId}", HttpMethod.GET)
+        new EndpointConfig("/codes/{codeId}", HttpMethod.GET),
     };
 
     /**
