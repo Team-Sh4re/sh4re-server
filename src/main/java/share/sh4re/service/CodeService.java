@@ -52,7 +52,8 @@ public class CodeService {
 //    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
     newCode.update(
         createCodeReq.getTitle(),
-        "generateDescription",
+        // generateDescription,
+        "코드 설명 자동 생성 기능이 일시정지되었습니다.",
         createCodeReq.getCode(),
         createCodeReq.getField(),
         user
