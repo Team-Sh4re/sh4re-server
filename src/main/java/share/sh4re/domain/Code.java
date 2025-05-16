@@ -1,8 +1,10 @@
 package share.sh4re.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -45,7 +47,8 @@ public class Code extends Base {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "code", cascade = CascadeType.ALL)
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "code", cascade = CascadeType.ALL)
     private List<Like> likeList = new ArrayList<>();
 
     public void update(String title, String description, String code, Fields field, User user){
