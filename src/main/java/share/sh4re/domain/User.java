@@ -1,9 +1,11 @@
 package share.sh4re.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
+import java.util.List;
 import lombok.Getter;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 

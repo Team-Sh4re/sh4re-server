@@ -37,6 +37,7 @@ public class CodeController {
 
   @GetMapping("/codes/{codeId}")
   public ResponseEntity<GetCodeRes> getCode(@PathVariable String codeId) {
+    System.out.println("dddd");
     return codeService.getCode(codeId);
   }
 

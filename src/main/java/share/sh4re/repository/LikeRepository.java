@@ -10,4 +10,5 @@ import share.sh4re.domain.User;
 @Repository
 public interface LikeRepository extends JpaRepository<Like, Long> {
   Optional<Like> findByCodeAndUser(Code code, User user);
+  Boolean existsByCodeAndUser(Code code, User user);
 }
