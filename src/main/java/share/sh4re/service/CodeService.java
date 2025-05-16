@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -70,8 +72,8 @@ public class CodeService {
   public ResponseEntity<GetCodeRes> getCode(String codeId) {
     Code code = validateCodeId(codeId);
     Boolean isLiked = false;
-    boolean isAuthenticated = SecurityContextHolder.getContext().getAuthentication().isAuthenticated();
-    if(isAuthenticated){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if(authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)){
       String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
       User user = userRepository.findByUsername(username).orElseThrow(UserErrorCode.MEMBER_NOT_FOUND::defaultException);
       isLiked = likeRepository.existsByCodeAndUser(code, user);
