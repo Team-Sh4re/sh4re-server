@@ -1,11 +1,15 @@
 package share.sh4re.service;
 
+import jakarta.persistence.criteria.Predicate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -59,6 +63,7 @@ public class CodeService {
         "코드 설명 자동 생성 기능이 일시정지되었습니다.",
         createCodeReq.getCode(),
         createCodeReq.getField(),
+        user.getClassNumber(),
         user
     );
     if(createCodeReq.getAssignmentId() != null) {
@@ -70,11 +75,14 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria) {
+  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId) {
     if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     pageNo -= 1;
+
     Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
-    Page<Code> page = codeRepository.findAll(pageable);
+    Specification<Code> specs = getSpecsForAllCodes(classNo, assignmentId);
+
+    Page<Code> page = codeRepository.findAll(specs, pageable);
     return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent(), page.getTotalPages())), HttpStatus.OK);
   }
 
@@ -129,4 +137,18 @@ public class CodeService {
     if(codeRes.isEmpty()) throw CodeErrorCode.CODE_NOT_FOUND.defaultException();
     return codeRes.get();
   }
+
+  public Specification<Code> getSpecsForAllCodes(Long classNo, Long assignmentId) {
+    return (root, query, cb) -> {
+      List<Predicate> predicates = new ArrayList<>();
+      if (classNo != null) {
+        predicates.add(cb.equal(root.get("classNo"), classNo));
+      }
+      if (assignmentId != null) {
+        predicates.add(cb.equal(root.get("assignment").get("id"), assignmentId));
+      }
+      return cb.and(predicates.toArray(new Predicate[0]));
+    };
+  }
+
 }
