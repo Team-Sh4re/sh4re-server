@@ -1,8 +1,10 @@
 package share.sh4re.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
@@ -30,6 +32,10 @@ public class User extends Base {
 
   @NotNull
   private Long studentNumber;
+
+  @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+  @JsonIgnoreProperties({"user"})
+  private List<Code> codeList;
 
   public void savePassword(String newPassword){
     if(newPassword == null) throw new IllegalArgumentException("newPassword is null");
