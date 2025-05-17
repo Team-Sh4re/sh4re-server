@@ -5,6 +5,7 @@ import java.util.List;
 import lombok.Getter;
 import share.sh4re.domain.Code;
 import share.sh4re.domain.User;
+import share.sh4re.domain.User.Roles;
 import share.sh4re.dto.res.MyInfoRes.MyInfoResData;
 
 public class MyInfoRes extends BaseRes<MyInfoResData> {
@@ -21,6 +22,7 @@ public class MyInfoRes extends BaseRes<MyInfoResData> {
     private final Long classNumber;
     private final Long studentNumber;
     private final List<Code> codeList;
+    private final Roles role;
 
     public MyInfoResData(User user) {
       this.id = user.getId();
@@ -30,6 +32,7 @@ public class MyInfoRes extends BaseRes<MyInfoResData> {
       this.classNumber = user.getClassNumber();
       this.studentNumber = user.getStudentNumber();
       this.codeList = user.getCodeList();
+      this.role = user.getRole();
     }
   }
 }
