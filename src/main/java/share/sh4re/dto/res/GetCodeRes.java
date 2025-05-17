@@ -1,6 +1,7 @@
 package share.sh4re.dto.res;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import share.sh4re.domain.Assignment;
 import share.sh4re.domain.Code;
@@ -27,6 +28,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
     private final Boolean liked;
     @JsonIgnoreProperties({"codeList"})
     private final Assignment assignment;
+    private LocalDateTime createdAt;
 
     public GetCodeResData(Code code, Boolean liked) {
       this.id = code.getId();
@@ -39,6 +41,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
       this.user = code.getUser();
       this.liked = liked;
       this.assignment = code.getAssignment();
+      this.createdAt = code.getCreatedAt();
     }
   }
 }
