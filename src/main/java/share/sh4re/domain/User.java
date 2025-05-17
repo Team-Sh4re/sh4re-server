@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotNull;
@@ -14,6 +16,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 @Getter
 @Entity
 public class User extends Base {
+  public enum Roles {
+    STUDENT, TEACHER
+  }
+
   @NotNull
   private String username;
 
@@ -32,6 +38,10 @@ public class User extends Base {
 
   @NotNull
   private Long studentNumber;
+
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private Roles role = Roles.STUDENT;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnoreProperties({"user"})
