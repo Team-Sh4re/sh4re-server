@@ -1,7 +1,7 @@
 package share.sh4re.service;
 
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,9 +35,9 @@ import share.sh4re.repository.UserRepository;
 
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CodeService {
-  private final int PAGE_SIZE = 12;
+  private final int PAGE_SIZE = 2;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final OpenAiService openAiService;
@@ -63,10 +63,11 @@ public class CodeService {
   }
 
   public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria) {
-    if(pageNo < 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    pageNo -= 1;
     Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
     Page<Code> page = codeRepository.findAll(pageable);
-    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent())), HttpStatus.OK);
+    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent(), page.getTotalPages())), HttpStatus.OK);
   }
 
   public ResponseEntity<GetCodeRes> getCode(String codeId) {

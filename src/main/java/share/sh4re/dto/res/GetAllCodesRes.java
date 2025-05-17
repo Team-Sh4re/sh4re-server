@@ -15,5 +15,6 @@ public class GetAllCodesRes extends BaseRes<GetAllCodesResData> {
   @AllArgsConstructor
   public static class GetAllCodesResData {
     private List<Code> codes;
+    private int totalPages;
   }
 }
