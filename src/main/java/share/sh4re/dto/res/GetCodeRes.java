@@ -1,6 +1,8 @@
 package share.sh4re.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
+import share.sh4re.domain.Assignment;
 import share.sh4re.domain.Code;
 import share.sh4re.domain.User;
 import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
@@ -20,8 +22,10 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
     private final String title;
     private final String description;
     private final Code.Fields field;
+    @JsonIgnoreProperties({"codeList"})
     private final User user;
     private final Boolean liked;
+    private final Assignment assignment;
 
     public GetCodeResData(Code code, Boolean liked) {
       this.id = code.getId();
@@ -33,6 +37,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
       this.field = code.getField();
       this.user = code.getUser();
       this.liked = liked;
+      this.assignment = code.getAssignment();
     }
   }
 }

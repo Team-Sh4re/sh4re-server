@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import share.sh4re.domain.Assignment;
 import share.sh4re.domain.Code;
 import share.sh4re.domain.Like;
 import share.sh4re.domain.User;
@@ -27,8 +28,10 @@ import share.sh4re.dto.res.GetCodeRes;
 import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
 import share.sh4re.dto.res.LikeCodeRes;
 import share.sh4re.dto.res.LikeCodeRes.LikeCodeResData;
+import share.sh4re.exceptions.errorcode.AssignmentErrorCode;
 import share.sh4re.exceptions.errorcode.CodeErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
+import share.sh4re.repository.AssignmentRepository;
 import share.sh4re.repository.CodeRepository;
 import share.sh4re.repository.LikeRepository;
 import share.sh4re.repository.UserRepository;
@@ -42,6 +45,7 @@ public class CodeService {
   private final UserRepository userRepository;
   private final OpenAiService openAiService;
   private final LikeRepository likeRepository;
+  private final AssignmentRepository assignmentRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -58,6 +62,11 @@ public class CodeService {
         createCodeReq.getField(),
         user
     );
+    if(createCodeReq.getAssignmentId() != null) {
+      Optional<Assignment> assignment = assignmentRepository.findById(createCodeReq.getAssignmentId());
+      if(assignment.isEmpty()) throw AssignmentErrorCode.ASSIGNMENT_NOT_FOUND.defaultException();
+      newCode.setAssignment(assignment.get());
+    }
     codeRepository.save(newCode);
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
