@@ -48,6 +48,7 @@ public class CodeService {
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final LikeRepository likeRepository;
+  private final OpenAiService openAiService;
   private final AssignmentRepository assignmentRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
@@ -56,11 +57,11 @@ public class CodeService {
     Optional<User> userRes = userRepository.findByUsername(username);
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
-//    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
+    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
     newCode.update(
         createCodeReq.getTitle(),
-        // generateDescription,
-        "코드 설명 자동 생성 기능이 일시정지되었습니다.",
+         generateDescription,
+//        "코드 설명 자동 생성 기능이 일시정지되었습니다.",
         createCodeReq.getCode(),
         createCodeReq.getField(),
         user.getClassNumber(),
