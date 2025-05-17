@@ -3,6 +3,7 @@ package share.sh4re.service;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -45,7 +46,7 @@ public class AssignmentService {
   }
 
   public ResponseEntity<GetAllAssignmentsRes> getAllAssignments() {
-    List<Assignment> assignments = assignmentRepository.findAll();
+    List<Assignment> assignments = assignmentRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     return new ResponseEntity<>(new GetAllAssignmentsRes(true, new GetAllAssignmentsResData(assignments)), HttpStatus.OK);
   }
 
