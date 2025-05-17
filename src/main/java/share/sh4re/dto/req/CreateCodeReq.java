@@ -1,6 +1,7 @@
 package share.sh4re.dto.req;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import share.sh4re.domain.Code;
@@ -14,7 +15,7 @@ public class CreateCodeReq {
   @NotBlank(message = "코드는 필수 입력값입니다.")
   String code;
 
-  @NotBlank(message = "종류는 필수 입력값입니다.")
+  @NotNull(message = "종류는 필수 입력값입니다.")
   Code.Fields field;
 
   Long assignmentId;
