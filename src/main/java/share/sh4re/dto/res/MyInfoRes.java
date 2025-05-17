@@ -1,5 +1,6 @@
 package share.sh4re.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.Getter;
 import share.sh4re.domain.Code;
@@ -19,6 +20,7 @@ public class MyInfoRes extends BaseRes<MyInfoResData> {
     private final Long grade;
     private final Long classNumber;
     private final Long studentNumber;
+    @JsonIgnoreProperties({"user"})
     private final List<Code> codeList;
 
     public MyInfoResData(User user) {
