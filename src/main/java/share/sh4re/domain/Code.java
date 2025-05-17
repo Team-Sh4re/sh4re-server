@@ -45,6 +45,9 @@ public class Code extends Base {
     @NotNull
     private Fields field;
 
+    @NotNull
+    private Long classNo;
+
     @ManyToOne
     @NotNull
     @JoinColumn(name = "user_id")
@@ -61,13 +64,14 @@ public class Code extends Base {
     @JsonIgnoreProperties({"codeList"})
     private Assignment assignment;
 
-    public void update(String title, String description, String code, Fields field, User user){
+    public void update(String title, String description, String code, Fields field, Long classNo, User user){
         this.likes = 0L;
         this.views = 0L;
         this.code = code;
         this.title = title;
         this.description = description;
         this.field = field;
+        this.classNo = classNo;
         this.user = user;
     }
 
