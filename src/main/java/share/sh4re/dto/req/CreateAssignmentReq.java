@@ -8,5 +8,8 @@ import lombok.Setter;
 @Setter
 public class CreateAssignmentReq {
   @NotBlank(message = "과제 이름은 필수 입력값입니다.")
-  String name;
+  String title;
+
+  @NotBlank(message = "과제 설명은 필수 입력값입니다.")
+  String description;
 }
