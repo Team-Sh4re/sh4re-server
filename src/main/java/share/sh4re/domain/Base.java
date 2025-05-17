@@ -20,7 +20,7 @@ public class Base {
   private Long id;
 
   @CreatedDate
-//  @JsonIgnore2
+//  @JsonIgnore
   private LocalDateTime createdAt;
 
   @LastModifiedDate
