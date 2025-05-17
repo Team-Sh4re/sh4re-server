@@ -29,7 +29,7 @@ public class CodeController {
 
   @GetMapping("/codes")
   public ResponseEntity<GetAllCodesRes> getAllCodes(
-      @RequestParam(required = false, defaultValue = "0", value = "page") int pageNo,
+      @RequestParam(required = false, defaultValue = "1", value = "page") int pageNo,
       @RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria,
       @RequestParam(required = false, value = "classNo") Long classNo,
       @RequestParam(required = false, value = "assignmentId") Long assignmentId
