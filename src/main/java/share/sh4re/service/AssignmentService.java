@@ -1,5 +1,7 @@
 package share.sh4re.service;
 
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,10 @@ import share.sh4re.domain.Assignment;
 import share.sh4re.dto.req.CreateAssignmentReq;
 import share.sh4re.dto.res.CreateAssignmentRes;
 import share.sh4re.dto.res.CreateAssignmentRes.CreateAssignmentResData;
+import share.sh4re.dto.res.GetAllAssignmentsRes;
+import share.sh4re.dto.res.GetAllAssignmentsRes.GetAllAssignmentsResData;
+import share.sh4re.dto.res.GetAssignmentRes;
+import share.sh4re.dto.res.GetAssignmentRes.GetCodesByAssignmentIdResData;
 import share.sh4re.exceptions.errorcode.AssignmentErrorCode;
 import share.sh4re.repository.AssignmentRepository;
 
@@ -25,5 +31,23 @@ public class AssignmentService {
     assignmentRepository.save(assignment);
     return new ResponseEntity<>(new CreateAssignmentRes(true, new CreateAssignmentResData(assignment.getId())),
         HttpStatus.OK);
+  }
+
+  public ResponseEntity<GetAllAssignmentsRes> getAllAssignments() {
+    List<Assignment> assignments = assignmentRepository.findAll();
+    return new ResponseEntity<>(new GetAllAssignmentsRes(true, new GetAllAssignmentsResData(assignments)), HttpStatus.OK);
+  }
+
+  public ResponseEntity<GetAssignmentRes> getAssignment(String assignmentId) {
+    if(assignmentId == null || assignmentId.isEmpty()) throw AssignmentErrorCode.INVALID_ARGUMENT.defaultException();
+    long id;
+    try {
+      id = Long.parseLong(assignmentId);
+    } catch (NumberFormatException e){
+      throw AssignmentErrorCode.INVALID_ARGUMENT.defaultException();
+    }
+    Optional<Assignment> assignment = assignmentRepository.findById(id);
+    if(assignment.isEmpty()) throw AssignmentErrorCode.ASSIGNMENT_NOT_FOUND.defaultException();
+    return new ResponseEntity<>(new GetAssignmentRes(true, new GetCodesByAssignmentIdResData(assignment.get())), HttpStatus.OK);
   }
 }

@@ -25,6 +25,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
     @JsonIgnoreProperties({"codeList"})
     private final User user;
     private final Boolean liked;
+    @JsonIgnoreProperties({"codeList"})
     private final Assignment assignment;
 
     public GetCodeResData(Code code, Boolean liked) {

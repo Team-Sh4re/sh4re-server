@@ -40,10 +40,9 @@ import share.sh4re.repository.UserRepository;
 @Transactional
 @RequiredArgsConstructor
 public class CodeService {
-  private final int PAGE_SIZE = 2;
+  private final int PAGE_SIZE = 12;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
-  private final OpenAiService openAiService;
   private final LikeRepository likeRepository;
   private final AssignmentRepository assignmentRepository;
 

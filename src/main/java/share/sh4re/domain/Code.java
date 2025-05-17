@@ -58,6 +58,7 @@ public class Code extends Base {
     @ManyToOne
     @Setter
     @JoinColumn(name = "assignment_id")
+    @JsonIgnoreProperties({"codeList"})
     private Assignment assignment;
 
     public void update(String title, String description, String code, Fields field, User user){

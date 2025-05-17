@@ -51,6 +51,8 @@ public class SecurityPathConfig {
         new EndpointConfig("/users/{userId}", HttpMethod.GET),
         new EndpointConfig("/codes", HttpMethod.GET),
         new EndpointConfig("/codes/{codeId}", HttpMethod.GET),
+        new EndpointConfig("/assignments", HttpMethod.GET),
+        new EndpointConfig("/assignments/{assignmentId}", HttpMethod.GET),
     };
 
     /**

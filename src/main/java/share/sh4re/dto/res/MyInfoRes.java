@@ -20,7 +20,6 @@ public class MyInfoRes extends BaseRes<MyInfoResData> {
     private final Long grade;
     private final Long classNumber;
     private final Long studentNumber;
-    @JsonIgnoreProperties({"user"})
     private final List<Code> codeList;
 
     public MyInfoResData(User user) {
