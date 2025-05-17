@@ -1,6 +1,7 @@
 package share.sh4re.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,7 @@ public class Code extends Base {
     @ManyToOne
     @NotNull
     @JoinColumn(name = "user_id")
+    @JsonIgnoreProperties({"codeList"})
     private User user;
 
     @JsonIgnore
@@ -56,6 +58,7 @@ public class Code extends Base {
     @ManyToOne
     @Setter
     @JoinColumn(name = "assignment_id")
+    @JsonIgnoreProperties({"codeList"})
     private Assignment assignment;
 
     public void update(String title, String description, String code, Fields field, User user){

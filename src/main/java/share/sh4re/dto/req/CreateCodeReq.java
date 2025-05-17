@@ -16,4 +16,6 @@ public class CreateCodeReq {
 
   @NotBlank(message = "종류는 필수 입력값입니다.")
   Code.Fields field;
+
+  Long assignmentId;
 }

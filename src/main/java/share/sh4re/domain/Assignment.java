@@ -15,9 +15,8 @@ public class Assignment extends Base {
   @NotNull
   private String name;
 
-  @JsonIgnore
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "assignment")
-  private List<Code> codes = new ArrayList<>();
+  private List<Code> codeList = new ArrayList<>();
 
   public void update(String name){
     this.name = name;

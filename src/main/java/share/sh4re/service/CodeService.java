@@ -1,7 +1,7 @@
 package share.sh4re.service;
 
 import java.util.Optional;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import share.sh4re.domain.Assignment;
 import share.sh4re.domain.Code;
 import share.sh4re.domain.Like;
 import share.sh4re.domain.User;
@@ -27,21 +28,23 @@ import share.sh4re.dto.res.GetCodeRes;
 import share.sh4re.dto.res.GetCodeRes.GetCodeResData;
 import share.sh4re.dto.res.LikeCodeRes;
 import share.sh4re.dto.res.LikeCodeRes.LikeCodeResData;
+import share.sh4re.exceptions.errorcode.AssignmentErrorCode;
 import share.sh4re.exceptions.errorcode.CodeErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
+import share.sh4re.repository.AssignmentRepository;
 import share.sh4re.repository.CodeRepository;
 import share.sh4re.repository.LikeRepository;
 import share.sh4re.repository.UserRepository;
 
 @Service
 @Transactional
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CodeService {
   private final int PAGE_SIZE = 12;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
-  private final OpenAiService openAiService;
   private final LikeRepository likeRepository;
+  private final AssignmentRepository assignmentRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -58,15 +61,21 @@ public class CodeService {
         createCodeReq.getField(),
         user
     );
+    if(createCodeReq.getAssignmentId() != null) {
+      Optional<Assignment> assignment = assignmentRepository.findById(createCodeReq.getAssignmentId());
+      if(assignment.isEmpty()) throw AssignmentErrorCode.ASSIGNMENT_NOT_FOUND.defaultException();
+      newCode.setAssignment(assignment.get());
+    }
     codeRepository.save(newCode);
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
   public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria) {
-    if(pageNo < 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+    pageNo -= 1;
     Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
     Page<Code> page = codeRepository.findAll(pageable);
-    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent())), HttpStatus.OK);
+    return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent(), page.getTotalPages())), HttpStatus.OK);
   }
 
   public ResponseEntity<GetCodeRes> getCode(String codeId) {

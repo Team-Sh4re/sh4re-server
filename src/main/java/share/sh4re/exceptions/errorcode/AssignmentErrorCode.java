@@ -6,7 +6,8 @@ import share.sh4re.exceptions.exception.CustomException;
 
 @RequiredArgsConstructor
 public enum AssignmentErrorCode implements ErrorCode {
-  INVALID_ARGUMENT("요청 값이 유효하지 않습니다.", HttpStatus.BAD_REQUEST);
+  INVALID_ARGUMENT("요청 값이 유효하지 않습니다.", HttpStatus.BAD_REQUEST),
+  ASSIGNMENT_NOT_FOUND("과제를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
 
   private final String message;
   private final HttpStatus httpStatus;

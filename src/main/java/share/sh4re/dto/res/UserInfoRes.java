@@ -21,7 +21,6 @@ public class UserInfoRes extends BaseRes<UserInfoRes.UserInfoResData> {
     private final Long grade;
     private final Long classNumber;
     private final Long studentNumber;
-    @JsonIgnoreProperties({"user"})
     private final List<Code> codeList;
 
     public UserInfoResData(User user) {
