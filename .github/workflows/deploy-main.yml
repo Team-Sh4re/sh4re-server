@@ -44,6 +44,8 @@ jobs:
                   value: ${{ secrets.OPENAI_API_KEY }}
                 - name: TZ
                   value: Asia/Seoul
+                - name: IS_DEVELOPMENT
+                  value: false
               buildenv: []
               start: java -Xms512M -Xmx1G -jar ./build/libs/sh4re-0.0.1-SNAPSHOT.jar
             context:
