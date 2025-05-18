@@ -69,12 +69,18 @@ public class Code extends Base {
     public void update(String title, String description, String code, Fields field, Long classNo, User user){
         this.likes = 0L;
         this.views = 0L;
+        this.code = code;
+        this.title = title;
+        this.description = description;
+        this.field = field;
+        this.classNo = classNo;
+        this.user = user;
+    }
+
+    public void edit(String title, String description, String code){
         if(code != null) this.code = code;
         if(title != null) this.title = title;
         if(description != null) this.description = description;
-        if(field != null) this.field = field;
-        if(classNo != null) this.classNo = classNo;
-        if(user != null) this.user = user;
     }
 
     public void increaseLikes() {

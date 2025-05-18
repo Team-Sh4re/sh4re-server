@@ -119,7 +119,7 @@ public class CodeService {
     if(!editCodeReq.getCode().equals(code.getCode())){
       description = openAiService.generateDescription(editCodeReq.getCode());
     }
-    code.update(editCodeReq.getTitle(), description, editCodeReq.getCode(), null, null, null);
+    code.edit(editCodeReq.getTitle(), description, editCodeReq.getCode());
     code.setAssignment(null);
     if(editCodeReq.getAssignmentId() != null){
       Optional<Assignment> assignment = assignmentRepository.findById(editCodeReq.getAssignmentId());
