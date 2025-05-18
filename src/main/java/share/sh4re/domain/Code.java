@@ -77,6 +77,12 @@ public class Code extends Base {
         this.user = user;
     }
 
+    public void edit(String title, String description, String code){
+        if(code != null) this.code = code;
+        if(title != null) this.title = title;
+        if(description != null) this.description = description;
+    }
+
     public void increaseLikes() {
         this.likes++;
     }
