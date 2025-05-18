@@ -54,6 +54,11 @@ public class CodeService {
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
     String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if(createCodeReq.getAssignmentId() != null) {
+      Optional<Assignment> assignment = assignmentRepository.findById(createCodeReq.getAssignmentId());
+      if(assignment.isEmpty()) throw AssignmentErrorCode.ASSIGNMENT_NOT_FOUND.defaultException();
+      newCode.setAssignment(assignment.get());
+    }
     Optional<User> userRes = userRepository.findByUsername(username);
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
@@ -67,11 +72,6 @@ public class CodeService {
         user.getClassNumber(),
         user
     );
-    if(createCodeReq.getAssignmentId() != null) {
-      Optional<Assignment> assignment = assignmentRepository.findById(createCodeReq.getAssignmentId());
-      if(assignment.isEmpty()) throw AssignmentErrorCode.ASSIGNMENT_NOT_FOUND.defaultException();
-      newCode.setAssignment(assignment.get());
-    }
     codeRepository.save(newCode);
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }

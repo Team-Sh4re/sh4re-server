@@ -28,7 +28,8 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
     private final Boolean liked;
     @JsonIgnoreProperties({"codeList"})
     private final Assignment assignment;
-    private LocalDateTime createdAt;
+    private final LocalDateTime createdAt;
+    private final LocalDateTime updatedAt;
 
     public GetCodeResData(Code code, Boolean liked) {
       this.id = code.getId();
@@ -42,6 +43,7 @@ public class GetCodeRes extends BaseRes<GetCodeResData> {
       this.liked = liked;
       this.assignment = code.getAssignment();
       this.createdAt = code.getCreatedAt();
+      this.updatedAt = code.getUpdatedAt();
     }
   }
 }
