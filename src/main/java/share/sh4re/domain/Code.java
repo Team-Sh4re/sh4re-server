@@ -66,6 +66,10 @@ public class Code extends Base {
     @JsonIgnoreProperties({"codeList"})
     private Assignment assignment;
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "code", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties({"code"})
+    private List<Comment> commentList = new ArrayList<>();
+
     public void update(String title, String description, String code, Fields field, Long classNo, User user){
         this.likes = 0L;
         this.views = 0L;
