@@ -19,15 +19,22 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import share.sh4re.domain.Assignment;
 import share.sh4re.domain.Code;
+import share.sh4re.domain.Comment;
 import share.sh4re.domain.Like;
 import share.sh4re.domain.User;
 import share.sh4re.dto.req.CreateCodeReq;
+import share.sh4re.dto.req.CreateCommentReq;
 import share.sh4re.dto.req.EditCodeReq;
+import share.sh4re.dto.req.EditCommentReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.CreateCodeRes.CreateCodeResData;
+import share.sh4re.dto.res.CreateCommentRes;
 import share.sh4re.dto.res.DeleteCodeRes;
 import share.sh4re.dto.res.DeleteCodeRes.DeleteCodeResData;
+import share.sh4re.dto.res.DeleteCommentRes;
 import share.sh4re.dto.res.EditCodeRes;
+import share.sh4re.dto.res.EditCommentRes;
+import share.sh4re.dto.res.EditCommentRes.EditCommentResData;
 import share.sh4re.dto.res.GetAllCodesRes;
 import share.sh4re.dto.res.GetAllCodesRes.GetAllCodesResData;
 import share.sh4re.dto.res.GetCodeRes;
@@ -36,9 +43,11 @@ import share.sh4re.dto.res.LikeCodeRes;
 import share.sh4re.dto.res.LikeCodeRes.LikeCodeResData;
 import share.sh4re.exceptions.errorcode.AssignmentErrorCode;
 import share.sh4re.exceptions.errorcode.CodeErrorCode;
+import share.sh4re.exceptions.errorcode.CommentErrorCode;
 import share.sh4re.exceptions.errorcode.UserErrorCode;
 import share.sh4re.repository.AssignmentRepository;
 import share.sh4re.repository.CodeRepository;
+import share.sh4re.repository.CommentRepository;
 import share.sh4re.repository.LikeRepository;
 import share.sh4re.repository.UserRepository;
 
@@ -52,6 +61,7 @@ public class CodeService {
   private final LikeRepository likeRepository;
   private final OpenAiService openAiService;
   private final AssignmentRepository assignmentRepository;
+  private final CommentRepository commentRepository;
 
   public ResponseEntity<CreateCodeRes> createCode(CreateCodeReq createCodeReq) {
     Code newCode = new Code();
@@ -145,6 +155,49 @@ public class CodeService {
       code.decreaseLikes();
     }
     return new ResponseEntity<>(new LikeCodeRes(true, new LikeCodeResData(code.getId())), HttpStatus.OK);
+  }
+
+  public ResponseEntity<CreateCommentRes> createComment(CreateCommentReq createCommentReq, String codeId) {
+    Code code = validateCodeId(codeId);
+    Comment newComment = new Comment();
+    String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    Optional<User> userRes = userRepository.findByUsername(username);
+    if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
+    newComment.update(createCommentReq.getContent(), code, userRes.get());
+    commentRepository.save(newComment);
+    return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment.getId())), HttpStatus.OK);
+  }
+
+  public ResponseEntity<EditCommentRes> editComment(EditCommentReq editCommentReq){
+    Optional<Comment> commentRes;
+    try {
+      commentRes = commentRepository.findById(editCommentReq.getId());
+    } catch (NumberFormatException e){
+      throw CommentErrorCode.INVALID_ARGUMENT.defaultException();
+    }
+    if(commentRes.isEmpty()) throw CommentErrorCode.COMMENT_NOT_FOUND.defaultException();
+    Comment comment = commentRes.get();
+    String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if(!comment.getAuthor().getUsername().equals(username)) throw CommentErrorCode.FORBIDDEN_REQUEST.defaultException();
+    comment.edit(editCommentReq.getContent());
+    commentRepository.save(comment);
+    return new ResponseEntity<>(new EditCommentRes(true, new EditCommentResData(comment.getCode().getId())), HttpStatus.OK);
+  }
+
+  public ResponseEntity<DeleteCommentRes> deleteComment(String commentId){
+    if(commentId == null || commentId.isEmpty()) throw CommentErrorCode.INVALID_ARGUMENT.defaultException();
+    Optional<Comment> commentRes;
+    try {
+      commentRes = commentRepository.findById(Long.parseLong(commentId));
+    } catch (NumberFormatException e){
+      throw CommentErrorCode.INVALID_ARGUMENT.defaultException();
+    }
+    if(commentRes.isEmpty()) throw CommentErrorCode.COMMENT_NOT_FOUND.defaultException();
+    Comment comment = commentRes.get();
+    String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
+    if(!comment.getAuthor().getUsername().equals(username)) throw CommentErrorCode.FORBIDDEN_REQUEST.defaultException();
+    commentRepository.deleteById(comment.getId());
+    return new ResponseEntity<>(new DeleteCommentRes(true, new DeleteCommentRes.DeleteCommentResData(comment.getCode().getId())), HttpStatus.OK);
   }
 
   private Code validateCodeId(String codeId){

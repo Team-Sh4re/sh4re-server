@@ -1,5 +1,6 @@
 package share.sh4re.dto.res;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

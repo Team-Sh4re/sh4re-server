@@ -13,10 +13,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import share.sh4re.dto.req.CreateCodeReq;
+import share.sh4re.dto.req.CreateCommentReq;
 import share.sh4re.dto.req.EditCodeReq;
+import share.sh4re.dto.req.EditCommentReq;
 import share.sh4re.dto.res.CreateCodeRes;
+import share.sh4re.dto.res.CreateCommentRes;
 import share.sh4re.dto.res.DeleteCodeRes;
+import share.sh4re.dto.res.DeleteCommentRes;
 import share.sh4re.dto.res.EditCodeRes;
+import share.sh4re.dto.res.EditCommentRes;
 import share.sh4re.dto.res.GetAllCodesRes;
 import share.sh4re.dto.res.GetCodeRes;
 import share.sh4re.dto.res.LikeCodeRes;
@@ -58,8 +63,24 @@ public class CodeController {
     return codeService.editCode(editCodeReq, codeId);
   }
 
+  @PostMapping("/{codeId}/comment")
+  public ResponseEntity<CreateCommentRes> createComment(@Valid @RequestBody CreateCommentReq createCommentReq, @PathVariable String codeId){
+    return codeService.createComment(createCommentReq, codeId);
+  }
+
+  @PatchMapping("/comment")
+  public ResponseEntity<EditCommentRes> editComment(@Valid @RequestBody EditCommentReq editCommentReq){
+    return codeService.editComment(editCommentReq);
+  }
+
+  @DeleteMapping("/comment/{commentId}")
+  public ResponseEntity<DeleteCommentRes> deleteComment(@PathVariable String commentId){
+    return codeService.deleteComment(commentId);
+  }
+
   @PostMapping("/{codeId}/like")
   public ResponseEntity<LikeCodeRes> likeCode(@PathVariable String codeId){
     return codeService.likeCode(codeId);
   }
+
 }
