@@ -22,6 +22,7 @@ import share.sh4re.domain.Code;
 import share.sh4re.domain.Comment;
 import share.sh4re.domain.Like;
 import share.sh4re.domain.User;
+import share.sh4re.domain.User.Roles;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.req.CreateCommentReq;
 import share.sh4re.dto.req.EditCodeReq;
@@ -91,12 +92,26 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId) {
+  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId, String role) {
     if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     pageNo -= 1;
 
     Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
     Specification<Code> specs = getSpecsForAllCodes(classNo, assignmentId);
+
+    if(role != null && !role.equals("all")) {
+      Specification<Code> roleSpec;
+      if(role.equals("teacher")) {
+        roleSpec = (root, query, criteriaBuilder) -> 
+            criteriaBuilder.equal(root.get("user").get("role"), Roles.TEACHER);
+      } else if(role.equals("student")) {
+        roleSpec = (root, query, criteriaBuilder) -> 
+            criteriaBuilder.equal(root.get("user").get("role"), Roles.STUDENT);
+      } else {
+        throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
+      }
+      specs = specs != null ? Specification.where(specs).and(roleSpec) : roleSpec;
+    }
 
     Page<Code> page = codeRepository.findAll(specs, pageable);
     return new ResponseEntity<>(new GetAllCodesRes(true, new GetAllCodesResData(page.getContent(), page.getTotalPages())), HttpStatus.OK);
