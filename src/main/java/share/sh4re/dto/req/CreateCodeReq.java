@@ -12,11 +12,16 @@ public class CreateCodeReq {
   @NotBlank(message = "제목은 필수 입력값입니다.")
   String title;
 
+  String description;
+
   @NotBlank(message = "코드는 필수 입력값입니다.")
   String code;
 
   @NotNull(message = "종류는 필수 입력값입니다.")
   Code.Fields field;
+
+  @NotNull(message = "설명 자동 생성은 필수 입력값입니다.")
+  boolean generateDescription;
 
   Long assignmentId;
 }

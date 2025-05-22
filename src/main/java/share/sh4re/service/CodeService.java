@@ -74,10 +74,13 @@ public class CodeService {
     Optional<User> userRes = userRepository.findByUsername(username);
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     User user = userRes.get();
-    String generateDescription = openAiService.generateDescription(createCodeReq.getCode());
+    String description = createCodeReq.getDescription();
+    if(createCodeReq.isGenerateDescription()) {
+      description = openAiService.generateDescription(createCodeReq.getCode());
+    } else if(description == null || description.isEmpty()) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     newCode.update(
         createCodeReq.getTitle(),
-         generateDescription,
+        description,
 //        "코드 설명 자동 생성 기능이 일시정지되었습니다.",
         createCodeReq.getCode(),
         createCodeReq.getField(),
