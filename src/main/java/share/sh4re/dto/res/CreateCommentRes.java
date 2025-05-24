@@ -2,6 +2,7 @@ package share.sh4re.dto.res;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import share.sh4re.domain.Comment;
 import share.sh4re.dto.res.CreateCommentRes.CreateCommentResData;
 
 public class CreateCommentRes extends BaseRes<CreateCommentResData> {
@@ -13,6 +14,6 @@ public class CreateCommentRes extends BaseRes<CreateCommentResData> {
   @Getter
   @AllArgsConstructor
   public static class CreateCommentResData {
-    private Long id;
+    private Comment comment;
   }
 }

@@ -8,6 +8,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 import lombok.Getter;
@@ -45,6 +46,7 @@ public class User extends Base {
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
   @JsonIgnoreProperties({"user"})
+  @OrderBy("createdAt DESC")
   private List<Code> codeList;
 
   public void savePassword(String newPassword){
