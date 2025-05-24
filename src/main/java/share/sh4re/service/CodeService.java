@@ -57,6 +57,7 @@ import share.sh4re.repository.UserRepository;
 @RequiredArgsConstructor
 public class CodeService {
   private final int PAGE_SIZE = 16;
+  private final int TEACHER_PAGE_SIZE = 18;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final LikeRepository likeRepository;
@@ -92,11 +93,13 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId, String role) {
+  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId, String role, boolean isTeacher) {
     if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     pageNo -= 1;
 
-    Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
+    int pageSize = isTeacher ? TEACHER_PAGE_SIZE : PAGE_SIZE;
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, criteria));
     Specification<Code> specs = getSpecsForAllCodes(classNo, assignmentId);
 
     if(role != null && !role.equals("all")) {

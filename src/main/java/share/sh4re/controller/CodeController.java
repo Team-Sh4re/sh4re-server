@@ -44,9 +44,10 @@ public class CodeController {
       @RequestParam(required = false, defaultValue = "createdAt", value = "criteria") String criteria,
       @RequestParam(required = false, value = "classNo") Long classNo,
       @RequestParam(required = false, value = "assignmentId") Long assignmentId,
-      @RequestParam(required = false, value = "role") String role
+      @RequestParam(required = false, value = "role") String role,
+      @RequestParam(required = false, value = "isTeacher") boolean isTeacher
   ){
-    return codeService.getAllCodes(pageNo, criteria, classNo, assignmentId, role);
+    return codeService.getAllCodes(pageNo, criteria, classNo, assignmentId, role, isTeacher);
   }
 
   @GetMapping("/{codeId}")

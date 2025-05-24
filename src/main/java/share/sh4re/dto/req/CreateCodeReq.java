@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 import share.sh4re.domain.Code;
 
 @Getter
@@ -20,8 +21,11 @@ public class CreateCodeReq {
   @NotNull(message = "종류는 필수 입력값입니다.")
   Code.Fields field;
 
-  @NotNull(message = "설명 자동 생성은 필수 입력값입니다.")
   boolean generateDescription;
 
   Long assignmentId;
+
+  public CreateCodeReq() {
+    this.generateDescription = true;
+  }
 }
