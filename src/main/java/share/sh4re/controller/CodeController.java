@@ -70,9 +70,9 @@ public class CodeController {
     return codeService.createComment(createCommentReq, codeId);
   }
 
-  @PatchMapping("/comment")
-  public ResponseEntity<EditCommentRes> editComment(@Valid @RequestBody EditCommentReq editCommentReq){
-    return codeService.editComment(editCommentReq);
+  @PatchMapping("/{codeId}/comment/{commentId}")
+  public ResponseEntity<EditCommentRes> editComment(@Valid @RequestBody EditCommentReq editCommentReq, @PathVariable String codeId, @PathVariable String commentId){
+    return codeService.editComment(commentId, editCommentReq.getContent());
   }
 
   @DeleteMapping("/comment/{commentId}")

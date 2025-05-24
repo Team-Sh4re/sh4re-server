@@ -189,10 +189,10 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<EditCommentRes> editComment(EditCommentReq editCommentReq){
+  public ResponseEntity<EditCommentRes> editComment(String commentId, String content){
     Optional<Comment> commentRes;
     try {
-      commentRes = commentRepository.findById(editCommentReq.getId());
+      commentRes = commentRepository.findById(Long.parseLong(commentId));
     } catch (NumberFormatException e){
       throw CommentErrorCode.INVALID_ARGUMENT.defaultException();
     }
@@ -200,7 +200,7 @@ public class CodeService {
     Comment comment = commentRes.get();
     String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if(!comment.getAuthor().getUsername().equals(username)) throw CommentErrorCode.FORBIDDEN_REQUEST.defaultException();
-    comment.edit(editCommentReq.getContent());
+    comment.edit(content);
     commentRepository.save(comment);
     return new ResponseEntity<>(new EditCommentRes(true, new EditCommentResData(comment.getCode().getId())), HttpStatus.OK);
   }

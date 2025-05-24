@@ -8,8 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class EditCommentReq {
-  @NotNull
-  Long id;
-
+  @NotBlank(message = "댓글 내용은 필수 입력값입니다.")
   String content;
 }
