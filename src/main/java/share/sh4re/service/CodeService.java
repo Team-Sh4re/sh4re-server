@@ -26,7 +26,6 @@ import share.sh4re.domain.User.Roles;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.req.CreateCommentReq;
 import share.sh4re.dto.req.EditCodeReq;
-import share.sh4re.dto.req.EditCommentReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.CreateCodeRes.CreateCodeResData;
 import share.sh4re.dto.res.CreateCommentRes;
@@ -186,7 +185,7 @@ public class CodeService {
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     newComment.update(createCommentReq.getContent(), code, userRes.get());
     commentRepository.save(newComment);
-    return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment.getId())), HttpStatus.OK);
+    return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment)), HttpStatus.OK);
   }
 
   public ResponseEntity<EditCommentRes> editComment(String commentId, String content){
