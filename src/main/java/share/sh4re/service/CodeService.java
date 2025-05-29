@@ -26,7 +26,6 @@ import share.sh4re.domain.User.Roles;
 import share.sh4re.dto.req.CreateCodeReq;
 import share.sh4re.dto.req.CreateCommentReq;
 import share.sh4re.dto.req.EditCodeReq;
-import share.sh4re.dto.req.EditCommentReq;
 import share.sh4re.dto.res.CreateCodeRes;
 import share.sh4re.dto.res.CreateCodeRes.CreateCodeResData;
 import share.sh4re.dto.res.CreateCommentRes;
@@ -57,6 +56,7 @@ import share.sh4re.repository.UserRepository;
 @RequiredArgsConstructor
 public class CodeService {
   private final int PAGE_SIZE = 16;
+  private final int TEACHER_PAGE_SIZE = 18;
   private final CodeRepository codeRepository;
   private final UserRepository userRepository;
   private final LikeRepository likeRepository;
@@ -92,11 +92,13 @@ public class CodeService {
     return new ResponseEntity<>(new CreateCodeRes(true, new CreateCodeResData(newCode.getId())), HttpStatus.OK);
   }
 
-  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId, String role) {
+  public ResponseEntity<GetAllCodesRes> getAllCodes(int pageNo, String criteria, Long classNo, Long assignmentId, String role, boolean isTeacher) {
     if(pageNo <= 0) throw CodeErrorCode.INVALID_ARGUMENT.defaultException();
     pageNo -= 1;
 
-    Pageable pageable = PageRequest.of(pageNo, PAGE_SIZE, Sort.by(Sort.Direction.DESC, criteria));
+    int pageSize = isTeacher ? TEACHER_PAGE_SIZE : PAGE_SIZE;
+
+    Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by(Sort.Direction.DESC, criteria));
     Specification<Code> specs = getSpecsForAllCodes(classNo, assignmentId);
 
     if(role != null && !role.equals("all")) {
@@ -183,13 +185,13 @@ public class CodeService {
     if(userRes.isEmpty()) throw UserErrorCode.MEMBER_NOT_FOUND.defaultException();
     newComment.update(createCommentReq.getContent(), code, userRes.get());
     commentRepository.save(newComment);
-    return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment.getId())), HttpStatus.OK);
+    return new ResponseEntity<>(new CreateCommentRes(true, new CreateCommentRes.CreateCommentResData(newComment)), HttpStatus.OK);
   }
 
-  public ResponseEntity<EditCommentRes> editComment(EditCommentReq editCommentReq){
+  public ResponseEntity<EditCommentRes> editComment(String commentId, String content){
     Optional<Comment> commentRes;
     try {
-      commentRes = commentRepository.findById(editCommentReq.getId());
+      commentRes = commentRepository.findById(Long.parseLong(commentId));
     } catch (NumberFormatException e){
       throw CommentErrorCode.INVALID_ARGUMENT.defaultException();
     }
@@ -197,7 +199,7 @@ public class CodeService {
     Comment comment = commentRes.get();
     String username = SecurityContextHolder.getContext().getAuthentication().getPrincipal().toString();
     if(!comment.getAuthor().getUsername().equals(username)) throw CommentErrorCode.FORBIDDEN_REQUEST.defaultException();
-    comment.edit(editCommentReq.getContent());
+    comment.edit(content);
     commentRepository.save(comment);
     return new ResponseEntity<>(new EditCommentRes(true, new EditCommentResData(comment.getCode().getId())), HttpStatus.OK);
   }

@@ -11,6 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +69,7 @@ public class Code extends Base {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "code", cascade = CascadeType.ALL)
     @JsonIgnoreProperties({"code"})
+    @OrderBy("createdAt DESC")
     private List<Comment> commentList = new ArrayList<>();
 
     public void update(String title, String description, String code, Fields field, Long classNo, User user){
