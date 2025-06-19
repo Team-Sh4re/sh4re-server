@@ -56,7 +56,6 @@ public class OpenAiService {
             분석 결과만 말해줘 부가적인 인사나 질문같은건 필요 없어.
             
             코드:
-            
             """ + code
     );
     if(result.isEmpty()) throw OpenAIErrorCode.FAILED_TO_GENERATE.defaultException();
