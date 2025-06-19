@@ -7,7 +7,6 @@ CREATE TABLE "user" (
                         grade BIGINT NOT NULL,
                         class_number BIGINT NOT NULL,
                         student_number BIGINT NOT NULL,
-                        role VARCHAR(255) NOT NULL,
                         created_at TIMESTAMP,
                         updated_at TIMESTAMP
 );
@@ -15,6 +14,7 @@ CREATE TABLE "user" (
 -- Assignment 테이블
 CREATE TABLE assignment (
                             id BIGSERIAL PRIMARY KEY,
+                            name TEXT NOT NULL,
                             title TEXT NOT NULL,
                             description TEXT NOT NULL,
                             created_at TIMESTAMP,
@@ -29,8 +29,7 @@ CREATE TABLE code (
                       code TEXT NOT NULL,
                       title TEXT NOT NULL,
                       description TEXT NOT NULL,
-                      field VARCHAR(255) NOT NULL,
-                      class_no BIGINT NOT NULL,
+                      field INTEGER NOT NULL,
                       user_id BIGINT NOT NULL,
                       assignment_id BIGINT,
                       created_at TIMESTAMP,

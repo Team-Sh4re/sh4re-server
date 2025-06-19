@@ -1,4 +1,4 @@
-ALTER TABLE code ADD COLUMN class_no INT;
+ALTER TABLE code ADD COLUMN class_no BIGINT;
 
 UPDATE code
 SET class_no = u.class_number
